@@ -7,7 +7,7 @@ Boathouse management software senior project for Gordon Rowing Association
 
 [Style Guide](https://docs.google.com/document/d/1p8rICcYYqYdwA_BfcFUZdxj-KcatZ-O4OyVQd7l-rp0/edit?tab=t.0#heading=h.r0ejx4grdqup)
 
-[End to End Hello World and Tool Proposal] https://docs.google.com/document/d/1QMlFSSwhWOb0-G6SxFqp8mQp00fu2watGJk57Y6POFU/edit?tab=t.0#heading=h.6ab3k4tnymg4 
+[End to End Hello World and Tool Proposal](https://docs.google.com/document/d/1QMlFSSwhWOb0-G6SxFqp8mQp00fu2watGJk57Y6POFU/edit?tab=t.0#heading=h.6ab3k4tnymg4)
 
 # React + TypeScript + Vite
 
