@@ -2,7 +2,10 @@
 Boathouse management software senior project for Gordon Rowing Association
 
 [Problem Statement](https://docs.google.com/document/d/1xPRC_YmjQq9dh2R2LygagJhpdu-roNbhPdt--BVLfn4/edit?usp=sharing)
+
 [Design Document](https://docs.google.com/document/d/1TBnAEsTlM1u4e00dk1lqTMHM6mWBoMf3rtxF-puDJuU/edit?usp=sharing)
+
+[Style Guide](https://docs.google.com/document/d/1p8rICcYYqYdwA_BfcFUZdxj-KcatZ-O4OyVQd7l-rp0/edit?tab=t.0#heading=h.r0ejx4grdqup)
 
 # React + TypeScript + Vite
 
