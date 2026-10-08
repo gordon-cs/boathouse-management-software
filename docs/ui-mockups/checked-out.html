@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Currently Checked Out</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f4f8;
+            color: #102a43;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        .container {
+            background: #ffffff;
+            width: 100%;
+            max-width: 500px;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            border-top: 8px solid #d32f2f; /* Red warning border for active session */
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            height: 80vh;
+            box-sizing: border-box;
+        }
+        /* Top Action Button */
+        .top-action {
+            margin-bottom: 1.5rem;
+            z-index: 10;
+        }
+        .btn-end {
+            background-color: #d32f2f;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 1rem;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+            box-shadow: 0 4px 6px rgba(211, 47, 47, 0.2);
+        }
+        .btn-end:hover {
+            background-color: #b71c1c;
+        }
+        /* Live Status Info */
+        .status-header {
+            text-align: center;
+            margin-bottom: 1rem;
+            z-index: 10;
+        }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: #ffeeee;
+            color: #c62828;
+            font-weight: bold;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #d32f2f;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.9); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.4; }
+            100% { transform: scale(0.9); opacity: 1; }
+        }
+        .boat-title {
+            font-size: 1.8rem;
+            margin: 0.75rem 0 0.25rem 0;
+            color: #102a43;
+        }
+        .time-tracking {
+            font-size: 0.95rem;
+            color: #627d98;
+        }
+        /* CSS Rowing Shell Art Blueprint Blueprint */
+        .visual-space {
+            flex-grow: 1;
+            position: relative;
+            margin-top: 1rem;
+            border: 1px dashed #bcccdc;
+            border-radius: 8px;
+            background-color: #f8fafc;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .blueprint-boat {
+            position: relative;
+            width: 16px;
+            height: 85%;
+            background-color: #bcccdc;
+            border-radius: 50% 50% 50% 50% / 30% 30% 70% 70%;
+            opacity: 0.6;
+        }
+        /* Riggers & Oars Structural Layout */
+        .rigger {
+            position: absolute;
+            background-color: #486581;
+            height: 2px;
+            width: 35px;
+        }
+        .oar {
+            position: absolute;
+            background-color: #627d98;
+            height: 2px;
+            width: 80px;
+        }
+        .oar::after {
+            content: '';
+            position: absolute;
+            width: 14px;
+            height: 5px;
+            background-color: #486581;
+            border-radius: 2px;
+            top: -1.5px;
+        }
+        /* Starboard Oars (Right side of screen, Port side of boat) */
+        .rigger.r1 { top: 25%; left: 14px; transform: rotate(15deg); }
+        .oar.o1 { top: 24%; left: 25px; transform: rotate(10deg); }
+        .oar.o1::after { right: 0; }
+
+        .rigger.r3 { top: 50%; left: 14px; transform: rotate(15deg); }
+        .oar.o3 { top: 49%; left: 25px; transform: rotate(10deg); }
+        .oar.o3::after { right: 0; }
+
+        /* Port Oars (Left side of screen, Starboard side of boat) */
+        .rigger.r2 { top: 37%; right: 14px; transform: rotate(-15deg); }
+        .oar.o2 { top: 36%; right: 25px; transform: rotate(-10deg); }
+        .oar.o2::after { left: 0; }
+
+        .rigger.r4 { top: 62%; right: 14px; transform: rotate(-15deg); }
+        .oar.o4 { top: 61%; right: 25px; transform: rotate(-10deg); }
+        .oar.o4::after { left: 0; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <!-- 1. End Session Button at the Top -->
+        <div class="top-action">
+            <button class="btn-end" onclick="window.location.href='index.html'">
+                End Session (Check Boat Back In)
+            </button>
+        </div>
+
+        <!-- 2. Currently Checked Out Block -->
+        <div class="status-header">
+            <div class="status-badge">
+                <div class="pulse-dot"></div>
+                Currently Checked Out
+            </div>
+            <h1 class="boat-title">Interceptor</h1>
+            <div class="time-tracking">
+                Checked out at: <strong>04:15 PM</strong>
+            </div>
+        </div>
+
+        <!-- 3. Aerial View Blueprint Render -->
+        <div class="visual-space">
+            <!-- Center Shell Body -->
+            <div class="blueprint-boat"></div>
+            
+            <!-- Rigger & Oar Layout Map (A Quad Shell Setup) -->
+            <div class="rigger r1"></div><div class="oar o1"></div>
+            <div class="rigger r2"></div><div class="oar o2"></div>
+            <div class="rigger r3"></div><div class="oar o3"></div>
+            <div class="rigger r4"></div><div class="oar o4"></div>
+        </div>
+
+    </div>
+
+</body>
+</html>
