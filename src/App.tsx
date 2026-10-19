@@ -3,6 +3,29 @@ import { useEffect, useState } from "react";
 import { supabase } from "./lib/supabaseClient";
 import type { Tables } from "./types/supabase";
 
+/* import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+
+import Login from './pages/Login';
+
+type="Other"  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* Public Routes */
+          /*<Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+
+          {/* Protected Routes */
+          /*<Route element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
+  );
+*/
 function App() {
   type User = Tables<"user">;
   type Boat = Tables<"boat">;
