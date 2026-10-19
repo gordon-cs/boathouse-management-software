@@ -9,6 +9,8 @@ Boathouse management software senior project for Gordon Rowing Association
 
 [End to End Hello World and Tool Proposal](https://docs.google.com/document/d/1QMlFSSwhWOb0-G6SxFqp8mQp00fu2watGJk57Y6POFU/edit?tab=t.0#heading=h.6ab3k4tnymg4)
 
+[Instructions/Handoff Document](https://docs.google.com/document/d/1x4I4EGzzWWElWJV94g7WDkuo4rQxXAjKfQi9Dj8jqI4/edit?usp=sharing)
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
