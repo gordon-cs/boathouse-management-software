@@ -1,4 +1,4 @@
-import { AuthProvider, useAuth } from "./context/AuthContext";
+import { AuthProvider } from "./context/AuthContext";
 import Login from "./views/Login";
 import SignUp from "./views/SignUp";
 import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
@@ -10,9 +10,11 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <Routes>
+          {/* Public routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
 
+          {/* Protected routes, add new views here */}
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
           </Route>

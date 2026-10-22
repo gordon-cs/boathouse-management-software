@@ -87,7 +87,7 @@ export default function Login() {
   );
 }
 
-// Basic inline styling placeholder (Replace with Tailwind CSS or your framework of choice)
+// Replace with CSS once we have a proper styling solution in place
 const styles: Record<string, React.CSSProperties> = {
   container: { display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#f3f4f6' },
   card: { background: '#fff', padding: '2.5rem', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', width: '100%', maxWidth: '400px' },

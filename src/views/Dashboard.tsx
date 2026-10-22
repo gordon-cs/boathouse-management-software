@@ -1,3 +1,4 @@
+/* This is a placeholder dashboard page. We will customize it as needed. */
 
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";

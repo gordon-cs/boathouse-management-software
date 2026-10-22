@@ -1,4 +1,5 @@
-
+/* This component is used to protect routes that require authentication. 
+It checks if the user is authenticated and either renders the requested page or redirects to the login page.*/
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
