@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
-import { supabase } from "./lib/supabaseClient";
-import type { Tables } from "./types/supabase";
+import { supabase } from "@lib/supabaseClient";
+import type { Tables } from "@db-types/supabase";
 
 function App() {
   type User = Tables<"user">;
