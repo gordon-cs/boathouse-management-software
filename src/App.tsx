@@ -1,8 +1,8 @@
 import { AuthProvider, useAuth } from "./context/AuthContext";
-import Login from "./pages/Login";
-import SignUp from "./pages/SignUp";
+import Login from "./views/Login";
+import SignUp from "./views/SignUp";
 import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
-import Dashboard from "./pages/Dashboard";
+import Dashboard from "./views/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
