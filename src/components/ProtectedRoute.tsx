@@ -1,13 +1,27 @@
-import { Navigate, Outlet } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function ProtectedRoute() {
-  const { user, loading } = useAuth();
+  const { session, loading } = useAuth();
+  const location = useLocation();
 
+  // Wait until Supabase checks the current session.
   if (loading) {
-    return <div>Loading authentication...</div>; // Replace with your spinner/skeleton
+    return <p>Loading...</p>;
   }
 
-  // Redirect to login if unauthorized, otherwise render nested matching child routes
-  return user ? <Outlet /> : <Navigate to="/login" replace />;
+  // Redirect unauthenticated users to the login page.
+  if (!session) {
+    return (
+      <Navigate
+        to="/Login"
+        replace
+        state={{ from: location }}
+      />
+    );
+  }
+
+  // Allow authenticated users to access the requested page.
+  return <Outlet />;
 }

@@ -78,6 +78,9 @@ export default function Login() {
           <button type="submit" disabled={loading} style={styles.button}>
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
+          <a href="/SignUp" style={{ marginTop: '1rem', display: 'block', textAlign: 'center' }}>
+            Don't have an account? Sign Up
+          </a>
         </form>
       </div>
     </div>
