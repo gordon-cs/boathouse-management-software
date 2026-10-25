@@ -24,7 +24,8 @@
     "paths": {
       "@components/*": ["./src/components/*"],
       "@lib/*": ["./src/lib/*"],
-      "@db-types/*": ["./src/types/*"]
+      "@db-types/*": ["./src/types/*"],
+      "@features/*": ["./src/features/*"]
     }
   },
   "include": ["src"]
