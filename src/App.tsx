@@ -52,10 +52,18 @@ function App() {
 
     async function loadCheckoutOptions() {
       const [usersResult, boatsResult, checkoutsResult] = await Promise.all([
+
+        
         supabase.from("user").select().order("user_name"),
         supabase.from("boat").select().order("name"),
         supabase.from("check_out").select(),
       ]);
+
+      console.log("Rower data:", usersResult.data);
+      console.log("Rower query error:", usersResult.error);
+      console.log("Users:", usersResult);
+      console.log("Boats:", boatsResult);
+      console.log("Checkouts:", checkoutsResult);
 
       if (usersResult.error) throw usersResult.error;
       if (boatsResult.error) throw boatsResult.error;
