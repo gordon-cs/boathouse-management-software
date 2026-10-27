@@ -1,17 +1,30 @@
-import BoatCatalog from "@features/boats/components/BoatCatalog";
-import UserCatalog from "@features/users/components/UserCatalog";
-import CheckoutCatalog from "@features/checkouts/components/CheckoutCatalog";
+import { AuthProvider } from "@context/AuthContext";
+import Login from "@views/Login";
+import SignUp from "@views/SignUp";
+import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
+import Dashboard from "@views/Dashboard";
+import ProtectedRoute from "@components/ProtectedRoute";
 
-function App() {
+export default function App() {
   return (
-    <div>
-      <UserCatalog />
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          {/* Public routes */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />
 
-      <BoatCatalog />
+          {/* Protected routes, add new views here */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+          </Route>
 
-      <CheckoutCatalog />
-    </div>
+          <Route
+            path="*"
+            element={<Navigate to="/dashboard" replace />}
+          />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
-
-export default App;
