@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Vessel Selection</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #f2f2f2;
+            font-family: Arial, sans-serif;
+            color: #222;
+        }
+
+        .vessel-panel {
+            width: 520px;
+            min-height: 750px;
+            padding: 15px;
+        }
+
+        /* SIGN OUT */
+
+        .sign-out {
+            text-align: right;
+            font-size: 16px;
+            margin-bottom: 8px;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        /* SEARCH */
+
+        .search-container {
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        #searchInput {
+            width: 100%;
+            height: 48px;
+            border: 2px solid #333;
+            background: #f2f2f2;
+            padding: 8px 12px;
+            font-size: 19px;
+            outline: none;
+        }
+
+        #searchInput:focus {
+            background: #f2f2f2;
+        }
+
+        /* VESSEL LIST */
+
+        .vessel-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .vessel {
+            width: 100%;
+            min-height: 42px;
+            border: 2px solid #333;
+            background: #f2f2f2;
+            text-align: left;
+            padding: 8px 12px;
+            font-size: 17px;
+            cursor: pointer;
+        }
+
+        .vessel:hover {
+            background: #e5e0bd;
+        }
+
+        .vessel.selected {
+            background: #ddd8b4;
+        }
+
+        /* MESSAGE */
+
+        .instruction {
+            text-align: center;
+            font-size: 18px;
+            margin: 15px 0 25px;
+        }
+
+        /* SIGN OUT BOAT */
+
+        .sign-out-boat {
+            display: block;
+            margin: 0 auto;
+            padding: 12px 20px;
+            background: #f2f2f2;
+            border: 2px solid #333;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .sign-out-boat:hover {
+            background: #ddd8b4;
+        }
+
+        /* DIVIDER */
+
+        .divider {
+            border: none;
+            border-top: 3px solid #333;
+            margin: 45px 0 30px;
+        }
+
+        /* KEYBOARD */
+
+        .keyboard {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .keyboard-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .key {
+            width: 42px;
+            height: 42px;
+            border: 2px solid #333;
+            background: #f2f2f2;
+            font-size: 17px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+
+        .key:hover {
+            background: #ddd8b4;
+        }
+
+        .key:active {
+            background: #c9c3a0;
+        }
+
+        .key.wide {
+            width: 90px;
+        }
+
+        .keyboard-label {
+            text-align: center;
+            font-size: 18px;
+            margin-top: 12px;
+        }
+
+        /* NO RESULTS */
+
+        .no-results {
+            text-align: center;
+            padding: 15px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+
+<body>
+
+    <div class="vessel-panel">
+
+        <!-- Sign out -->
+        <a href="SignIn.HTML" style="margin-left: 80%;">Sign Out</a>
+
+
+        <!-- Search -->
+
+        <div class="search-container">
+
+            <input
+                id="searchInput"
+                type="text"
+                placeholder="Search vessels..."
+                autocomplete="off"
+            >
+
+        </div>
+
+
+        <!-- Vessel list -->
+
+        <div id="vesselList" class="vessel-list">
+        </div>
+
+
+        <!-- Message -->
+
+        <div id="instruction" class="instruction">
+            Please select your vessel.
+        </div>
+
+
+        <!-- Sign out boat -->
+
+        <button
+            id="signOutBoat"
+            class="sign-out-boat"
+            onclick="signOutBoat()"
+        >
+            SIGN OUT BOAT
+        </button>
+
+
+        <!-- Divider -->
+
+        
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        /* VESSEL DATA */
+
+        const vessels = [
+            "Sharpened Iron",
+            "Sola Fide",
+            "Sola Gratia",
+            "Flicka",
+            "Julie",
+            "Outta Gum",
+            "Tessa's Boat (DOM)",
+            "Cory Ward",
+            "Mr. Jonathan Tymann",
+            "Stone's Throw"
+        ];
+
+
+        /* DOM ELEMENTS */
+
+        const searchInput =
+            document.getElementById("searchInput");
+
+        const vesselList =
+            document.getElementById("vesselList");
+
+        const instruction =
+            document.getElementById("instruction");
+
+
+        let selectedVessel = null;
+
+
+        /* LEVENSHTEIN DISTANCE */
+
+        function levenshtein(a, b) {
+
+            const matrix = [];
+
+            for (let i = 0; i <= b.length; i++) {
+                matrix[i] = [i];
+            }
+
+            for (let j = 0; j <= a.length; j++) {
+                matrix[0][j] = j;
+            }
+
+            for (let i = 1; i <= b.length; i++) {
+
+                for (let j = 1; j <= a.length; j++) {
+
+                    if (
+                        b.charAt(i - 1) ===
+                        a.charAt(j - 1)
+                    ) {
+
+                        matrix[i][j] =
+                            matrix[i - 1][j];
+
+                    } else {
+
+                        matrix[i][j] =
+                            Math.min(
+                                matrix[i - 1][j] + 1,
+                                matrix[i][j - 1] + 1,
+                                matrix[i - 1][j - 1] + 1
+                            );
+                    }
+                }
+            }
+
+            return matrix[b.length][a.length];
+        }
+
+
+        /* FUZZY SEARCH */
+
+        function fuzzySearch(query) {
+
+            query = query
+                .toUpperCase()
+                .trim();
+
+
+            if (!query) {
+                return vessels;
+            }
+
+
+            return vessels
+
+                .map(vessel => {
+
+                    const name =
+                        vessel.toUpperCase();
+
+
+                    /* Exact substring */
+
+                    if (name.includes(query)) {
+
+                        return {
+                            name: vessel,
+                            score: 0
+                        };
+                    }
+
+
+                    /* Compare individual words */
+
+                    const words =
+                        name.split(" ");
+
+                    let bestScore =
+                        Infinity;
+
+
+                    words.forEach(word => {
+
+                        const distance =
+                            levenshtein(
+                                query,
+                                word
+                            );
+
+                        bestScore =
+                            Math.min(
+                                bestScore,
+                                distance
+                            );
+                    });
+
+
+                    /* Compare entire name */
+
+                    bestScore =
+                        Math.min(
+                            bestScore,
+                            levenshtein(
+                                query,
+                                name
+                            )
+                        );
+
+
+                    return {
+                        name: vessel,
+                        score: bestScore
+                    };
+
+                })
+
+
+                /* Fuzzy threshold */
+
+                .filter(item => {
+
+                    const threshold =
+                        Math.max(
+                            2,
+                            Math.floor(
+                                query.length * 0.4
+                            )
+                        );
+
+                    return item.score <= threshold;
+
+                })
+
+
+                .sort(
+                    (a, b) =>
+                        a.score - b.score
+                )
+
+
+                .map(
+                    item => item.name
+                );
+        }
+
+
+        /* DISPLAY VESSELS */
+
+        function renderVessels() {
+
+            const query =
+                searchInput.value;
+
+            const results =
+                fuzzySearch(query);
+
+
+            vesselList.innerHTML = "";
+
+
+            if (results.length === 0) {
+
+                vesselList.innerHTML = `
+                    <div class="no-results">
+                        No vessels found.
+                    </div>
+                `;
+
+                return;
+            }
+
+
+            results.some((vessel, index) => {
+                
+                if (index === 3) {
+                    return true;
+                }
+
+                const button =
+                    document.createElement("button");
+
+
+                button.className =
+                    "vessel";
+
+
+                if (
+                    vessel === selectedVessel
+                ) {
+
+                    button.classList.add(
+                        "selected"
+                    );
+                }
+
+
+                button.textContent =
+                    vessel;
+
+
+                button.onclick = () => {
+
+                    selectVessel(vessel);
+
+                };
+
+
+                vesselList.appendChild(button);
+
+            });
+        }
+
+
+        /* SELECT VESSEL */
+
+        function selectVessel(vessel) {
+
+            selectedVessel =
+                vessel;
+
+
+            instruction.textContent =
+                "Selected: " + vessel;
+
+
+            renderVessels();
+        }
+
+
+        /* KEYBOARD INPUT */
+
+        function keyPress(key) {
+
+            searchInput.value += key;
+
+            renderVessels();
+
+            searchInput.focus();
+        }
+
+
+        /* BACKSPACE */
+
+        function backspace() {
+
+            searchInput.value =
+                searchInput.value.slice(
+                    0,
+                    -1
+                );
+
+
+            renderVessels();
+
+            searchInput.focus();
+        }
+
+
+        /* CLEAR SEARCH */
+
+        function clearSearch() {
+
+            searchInput.value = "";
+
+            renderVessels();
+
+            searchInput.focus();
+        }
+
+
+        /* PHYSICAL KEYBOARD */
+
+        searchInput.addEventListener(
+            "input",
+            renderVessels
+        );
+
+
+        /* SIGN OUT */
+
+        function signOutBoat() {
+
+            if (!selectedVessel) {
+
+                alert(
+                    "Please select a vessel first."
+                );
+
+                return;
+            }
+
+
+            alert(
+                "Signing out " +
+                selectedVessel
+            );
+        }
+
+
+        /* INITIAL DISPLAY */
+
+        renderVessels();
+
+    </script>
+
+</body>
+
+</html>
+```
