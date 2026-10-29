@@ -1,6 +1,21 @@
 # boathouse-management-software
 Boathouse management software senior project for Gordon Rowing Association
 
+## UI components
+
+The app uses [shadcn/ui](https://ui.shadcn.com/) with Tailwind CSS v4. The
+dashboard view composes its generated UI primitives from `src/components/ui`
+with the existing boats, users, and checkout data hooks.
+
+To add another shadcn/ui component, run this from the project directory:
+
+```sh
+npx shadcn@latest add <component>
+```
+
+Generated components follow the aliases in `components.json`; the Tailwind
+theme and global styles are in `src/index.css`.
+
 [Problem Statement](https://docs.google.com/document/d/1xPRC_YmjQq9dh2R2LygagJhpdu-roNbhPdt--BVLfn4/edit?usp=sharing)
 
 [Design Document](https://docs.google.com/document/d/1TBnAEsTlM1u4e00dk1lqTMHM6mWBoMf3rtxF-puDJuU/edit?usp=sharing)

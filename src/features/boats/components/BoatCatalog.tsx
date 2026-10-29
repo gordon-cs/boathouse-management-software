@@ -1,4 +1,3 @@
-import { Fragment } from "react";
 import { useBoats } from "../hooks/useBoats";
 
 function BoatCatalog() {
@@ -9,25 +8,37 @@ function BoatCatalog() {
   } = useBoats();
 
   if (boatsPending) {
-    return <p>Loading boats...</p>;
+    return <p className="text-sm text-muted-foreground">Loading boats...</p>;
   }
 
   if (boatsError) {
-    return <p>Could not load boats: {boatsError.message}</p>;
+    return (
+      <p className="text-sm text-destructive" role="alert">
+        Could not load boats: {boatsError.message}
+      </p>
+    );
+  }
+
+  if (!boatsList?.length) {
+    return <p className="text-sm text-muted-foreground">No boats found.</p>;
   }
 
   return (
-    <>
-      <h1>Boats</h1>
-      {boatsList?.map((boat) => (
-        <Fragment key={boat.boat_id}>
-          <h2>{boat.name}</h2>
-          <p>
-            {boat.make}, {boat.seats} seats
+    <ul className="space-y-3">
+      {boatsList.map((boat) => (
+        <li
+          className="rounded-lg border bg-background p-3"
+          key={boat.boat_id}
+        >
+          <p className="font-medium text-foreground">
+            {boat.name ?? "Unnamed boat"}
           </p>
-        </Fragment>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {boat.make ?? "Make not provided"} · {boat.seats} seats
+          </p>
+        </li>
       ))}
-    </>
+    </ul>
   );
 }
 
