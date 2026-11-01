@@ -1,6 +1,7 @@
 import BoatCatalog from "@features/boats/components/BoatCatalog";
 import UserCatalog from "@features/users/components/UserCatalog";
 import CheckoutCatalog from "@features/checkouts/components/CheckoutCatalog";
+import DashboardNavbar from "@/components/ui/DashboardNavbar";
 import {
   Card,
   CardContent,
@@ -12,6 +13,7 @@ import {
 function Dashboard() {
   return (
     <main className="min-h-svh bg-muted/40 px-4 py-8 text-left sm:px-6 lg:px-8">
+      <DashboardNavbar />
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-8">
         <header className="space-y-2">
           <p className="text-sm font-medium text-muted-foreground">
