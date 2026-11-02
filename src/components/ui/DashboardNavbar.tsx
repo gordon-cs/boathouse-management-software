@@ -1,11 +1,12 @@
 
 import { NavLink, useNavigate } from "react-router-dom";
-import { Ship, Users, Wrench, LogOut } from "lucide-react";
+import { Ship, Users, Wrench, LogOut, ClipboardList } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
 const navItems = [
   { label: "Boats", path: "/boats", icon: Ship },
+  { label: "Checkouts", path: "/checkouts", icon: ClipboardList },
   { label: "Rowers", path: "/rowers", icon: Users },
   { label: "Repairs", path: "/repairs", icon: Wrench },
 ];

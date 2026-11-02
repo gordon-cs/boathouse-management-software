@@ -5,6 +5,9 @@ import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
 import Dashboard from "@views/Dashboard";
 import ProtectedRoute from "@components/ProtectedRoute";
 import Boats from "@/views/Boats";
+import Repairs from "@/views/Repairs";
+import Checkouts from "@/views/Checkouts";
+import Rowers from "@/views/Rowers";
 
 export default function App() {
   return (
@@ -19,6 +22,9 @@ export default function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/boats" element={<Boats />} />
+            <Route path="/rowers" element={<Rowers />} />
+            <Route path="/repairs/:repairId?" element={<Repairs />} />
+            <Route path="/checkouts/:checkoutId?" element={<Checkouts />} />
           </Route>
 
           <Route
