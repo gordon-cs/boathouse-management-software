@@ -1,9 +1,11 @@
 
 import { useState } from "react";
+import type { ComponentProps } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Ship, Users, Wrench, LogOut } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabaseClient";
 
 const navItems = [
@@ -12,7 +14,10 @@ const navItems = [
   { label: "Repairs", path: "/repairs", icon: Wrench },
 ];
 
-export default function DashboardNavbar() {
+export default function DashboardNavbar({
+  className,
+  ...props
+}: ComponentProps<"header">) {
   const navigate = useNavigate();
   const [logoutError, setLogoutError] = useState<string | null>(null);
   const [isSigningOut, setIsSigningOut] = useState(false);
@@ -36,7 +41,10 @@ export default function DashboardNavbar() {
   }
 
   return (
-    <header className="flex w-full items-center gap-2 border-b px-4 py-3">
+    <header
+      {...props}
+      className={cn("flex w-full items-center gap-2 border-b px-4 py-3", className)}
+    >
       <nav
         className="flex items-center gap-2"
         aria-label="Dashboard navigation"
