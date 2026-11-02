@@ -1,3 +1,4 @@
+import DataTable, { type DataTableColumn } from "@/components/ui/DataTable";
 import { useBoats } from "@features/boats/hooks/useBoats";
 import { useUsers } from "@features/users/hooks/useUsers";
 
@@ -5,6 +6,27 @@ import {
   useAdditionalRowers,
   useCheckouts,
 } from "@features/checkouts/hooks/useCheckouts";
+import type {
+  AdditionalRower,
+  Checkout,
+} from "@features/checkouts/api/checkouts.api";
+
+function getBoatName(boatId: number, boatNames: Map<number, string>) {
+  return boatNames.get(boatId) ?? `Boat #${boatId}`;
+}
+
+function getRowerNames(
+  checkout: Checkout,
+  rowersByCheckout: Map<number, AdditionalRower[]>,
+  userNames: Map<number, string>
+) {
+  return [
+    userNames.get(checkout.user_id) ?? `User #${checkout.user_id}`,
+    ...(rowersByCheckout.get(checkout.check_out_id) ?? []).map(
+      (rower) => userNames.get(rower.user_id) ?? `User #${rower.user_id}`
+    ),
+  ].join(", ");
+}
 
 function CheckoutCatalog() {
   const boats = useBoats();
@@ -45,64 +67,67 @@ function CheckoutCatalog() {
   const checkoutsList = checkouts.data;
   const additionalRowersList = additionalRowers.data;
 
-  if (!checkoutsList?.length) {
-    return <p className="text-sm text-muted-foreground">No checkouts found.</p>;
+  const boatNames = new Map(
+    (boatsList ?? []).map((boat) => [
+      boat.boat_id,
+      boat.name ?? `Boat #${boat.boat_id}`,
+    ])
+  );
+  const userNames = new Map(
+    (usersList ?? []).map((user) => [user.user_id, user.user_name])
+  );
+  const rowersByCheckout = new Map<number, AdditionalRower[]>();
+
+  for (const rower of additionalRowersList ?? []) {
+    const rowers = rowersByCheckout.get(rower.check_out_id) ?? [];
+    rowers.push(rower);
+    rowersByCheckout.set(rower.check_out_id, rowers);
   }
 
+  const columns: DataTableColumn<Checkout>[] = [
+    {
+      id: "checkout",
+      header: "Checkout",
+      getValue: (checkout) => checkout.check_out_id,
+      getSearchValue: (checkout) => `Checkout #${checkout.check_out_id}`,
+      render: (checkout) => `Checkout #${checkout.check_out_id}`,
+    },
+    {
+      id: "date",
+      header: "Date",
+      getValue: (checkout) => checkout.date,
+    },
+    {
+      id: "boat",
+      header: "Boat",
+      getValue: (checkout) => getBoatName(checkout.boat_id, boatNames),
+    },
+    {
+      id: "time-out",
+      header: "Time out",
+      getValue: (checkout) => checkout.time_out ?? "Not recorded",
+    },
+    {
+      id: "time-in",
+      header: "Time in",
+      getValue: (checkout) => checkout.time_in ?? "Not recorded",
+    },
+    {
+      id: "rowers",
+      header: "Rowers",
+      getValue: (checkout) =>
+        getRowerNames(checkout, rowersByCheckout, userNames),
+    },
+  ];
+
   return (
-    <ul className="space-y-3">
-      {checkoutsList.map((checkout) => (
-        <li
-          className="rounded-lg border bg-background p-4"
-          key={checkout.check_out_id}
-        >
-          <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <h2 className="m-0 text-base font-medium text-foreground">
-              Checkout #{checkout.check_out_id}
-            </h2>
-            <span className="text-sm text-muted-foreground">
-              {checkout.date}
-            </span>
-          </div>
-          <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-4">
-            <div>
-              <dt className="text-muted-foreground">Boat</dt>
-              <dd className="font-medium">
-                {boatsList?.find((boat) => boat.boat_id === checkout.boat_id)
-                  ?.name ?? `Boat #${checkout.boat_id}`}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-muted-foreground">Time out</dt>
-              <dd className="font-medium">{checkout.time_out ?? "Not recorded"}</dd>
-            </div>
-            <div>
-              <dt className="text-muted-foreground">Time in</dt>
-              <dd className="font-medium">{checkout.time_in ?? "Not recorded"}</dd>
-            </div>
-            <div>
-              <dt className="text-muted-foreground">Rowers</dt>
-              <dd className="font-medium">
-                {[
-                  usersList?.find((user) => user.user_id === checkout.user_id)
-                    ?.user_name ?? `User #${checkout.user_id}`,
-                  ...(additionalRowersList ?? [])
-                    .filter(
-                      (rower) => rower.check_out_id === checkout.check_out_id
-                    )
-                    .map(
-                      (rower) =>
-                        usersList?.find(
-                          (user) => user.user_id === rower.user_id
-                        )?.user_name ?? `User #${rower.user_id}`
-                    ),
-                ].join(", ")}
-              </dd>
-            </div>
-          </dl>
-        </li>
-      ))}
-    </ul>
+    <DataTable
+      columns={columns}
+      emptyMessage="No checkouts found."
+      getRowId={(checkout) => checkout.check_out_id}
+      rows={checkoutsList ?? []}
+      searchLabel="Search checkouts"
+    />
   );
 }
 

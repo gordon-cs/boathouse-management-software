@@ -1,4 +1,25 @@
+import DataTable, { type DataTableColumn } from "@/components/ui/DataTable";
+
+import type { User } from "../api/users.api";
 import { useUsers } from "../hooks/useUsers";
+
+const columns: DataTableColumn<User>[] = [
+  {
+    id: "name",
+    header: "Name",
+    getValue: (user) => user.user_name,
+  },
+  {
+    id: "type",
+    header: "Type",
+    getValue: (user) => user.user_type,
+  },
+  {
+    id: "single-seat-approval",
+    header: "Single-seat approval",
+    getValue: (user) => user.is_single_approved === true,
+  },
+];
 
 function UserCatalog() {
   const {
@@ -19,25 +40,14 @@ function UserCatalog() {
     );
   }
 
-  if (!usersList?.length) {
-    return <p className="text-sm text-muted-foreground">No users found.</p>;
-  }
-
   return (
-    <ul className="space-y-3">
-      {usersList.map((user) => (
-        <li
-          className="rounded-lg border bg-background p-3"
-          key={user.user_id}
-        >
-          <p className="font-medium text-foreground">{user.user_name}</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {user.user_type} · Single-seat approval:{" "}
-            {user.is_single_approved ? "Yes" : "No"}
-          </p>
-        </li>
-      ))}
-    </ul>
+    <DataTable
+      columns={columns}
+      emptyMessage="No users found."
+      getRowId={(user) => user.user_id}
+      rows={usersList ?? []}
+      searchLabel="Search users"
+    />
   );
 }
 
