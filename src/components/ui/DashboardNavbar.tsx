@@ -1,8 +1,10 @@
 
+import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Ship, Users, Wrench, LogOut } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/lib/supabaseClient";
 
 const navItems = [
   { label: "Boats", path: "/boats", icon: Ship },
@@ -12,10 +14,25 @@ const navItems = [
 
 export default function DashboardNavbar() {
   const navigate = useNavigate();
+  const [logoutError, setLogoutError] = useState<string | null>(null);
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
-  function handleLogout() {
-    // TODO: Sign out through your authentication provider first.
-    navigate("/login");
+  async function handleLogout() {
+    setLogoutError(null);
+    setIsSigningOut(true);
+
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+
+      navigate("/login", { replace: true });
+    } catch (error) {
+      setLogoutError(
+        error instanceof Error ? error.message : "Could not sign out. Please try again.",
+      );
+    } finally {
+      setIsSigningOut(false);
+    }
   }
 
   return (
@@ -45,10 +62,16 @@ export default function DashboardNavbar() {
         <Button
           variant="outline"
           onClick={handleLogout}
+          disabled={isSigningOut}
         >
           <LogOut className="mr-2 h-4 w-4" />
-          Log Out
+          {isSigningOut ? "Logging Out..." : "Log Out"}
         </Button>
+        {logoutError && (
+          <p className="mt-2 text-sm text-destructive" role="alert">
+            {logoutError}
+          </p>
+        )}
       </div>
     </header>
   );
