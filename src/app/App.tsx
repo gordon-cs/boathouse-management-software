@@ -4,6 +4,7 @@ import SignUp from "@views/SignUp";
 import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
 import Dashboard from "@views/Dashboard";
 import ProtectedRoute from "@components/ProtectedRoute";
+import Boats from "@/views/Boats";
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
           {/* Protected routes, add new views here */}
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/boats" element={<Boats />} />
           </Route>
 
           <Route
