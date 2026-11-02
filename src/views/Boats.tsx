@@ -1,11 +1,9 @@
-import BoatCatalog from "@features/boats/components/BoatCatalog";
 import BoatStats from "@features/boats/components/BoatStats";
 import { useBoats } from "@features/boats/hooks/useBoats";
 import { Textarea } from "@/components/ui/textarea"
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -16,6 +14,19 @@ function Boats() {
     isPending: boatsPending,
     data: boatsList,
   } = useBoats();
+  
+  if (boatsPending) {
+    return <p className="text-sm text-muted-foreground">Loading boats...</p>;
+  }
+
+  if (boatsError) {
+    return (
+      <p className="text-sm text-destructive" role="alert">
+        Could not load boats: {boatsError.message}
+      </p>
+    );
+  }
+
   return (
     <main className="min-h-svh bg-muted/40 px-4 py-8 text-left sm:px-6 lg:px-8 grid grid-cols-3 gap-4">
       <div className="col-start-2 col-span-2 mx-auto flex w-full max-w-7xl flex-col gap-8">
