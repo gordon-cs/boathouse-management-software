@@ -1,4 +1,30 @@
+import DataTable, { type DataTableColumn } from "@/components/ui/DataTable";
+
+import type { Boat } from "../api/boats.api";
 import { useBoats } from "../hooks/useBoats";
+
+const columns: DataTableColumn<Boat>[] = [
+  {
+    id: "name",
+    header: "Boat",
+    getValue: (boat) => boat.name,
+    getSearchValue: (boat) => boat.name ?? "Unnamed boat",
+    render: (boat) => boat.name ?? "Unnamed boat",
+  },
+  {
+    id: "make",
+    header: "Make",
+    getValue: (boat) => boat.make,
+    getSearchValue: (boat) => boat.make ?? "Make not provided",
+    render: (boat) => boat.make ?? "Make not provided",
+  },
+  {
+    id: "seats",
+    header: "Seats",
+    getValue: (boat) => boat.seats,
+    render: (boat) => `${boat.seats} seats`,
+  },
+];
 
 function BoatCatalog() {
   const {
@@ -19,26 +45,14 @@ function BoatCatalog() {
     );
   }
 
-  if (!boatsList?.length) {
-    return <p className="text-sm text-muted-foreground">No boats found.</p>;
-  }
-
   return (
-    <ul className="space-y-3">
-      {boatsList.map((boat) => (
-        <li
-          className="rounded-lg border bg-background p-3"
-          key={boat.boat_id}
-        >
-          <p className="font-medium text-foreground">
-            {boat.name ?? "Unnamed boat"}
-          </p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {boat.make ?? "Make not provided"} · {boat.seats} seats
-          </p>
-        </li>
-      ))}
-    </ul>
+    <DataTable
+      columns={columns}
+      emptyMessage="No boats found."
+      getRowId={(boat) => boat.boat_id}
+      rows={boatsList ?? []}
+      searchLabel="Search boats"
+    />
   );
 }
 
