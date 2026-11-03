@@ -14,6 +14,14 @@ import { useRepairs } from "@features/repairs/hooks/useRepairs";
 import type { Repair } from "@features/repairs/api/repairs.api";
 import { useUsers } from "@features/users/hooks/useUsers";
 
+function formatRepairStatus(status: Repair["status"]) {
+  return status === "to_do"
+    ? "To do"
+    : status === "in_progress"
+      ? "In progress"
+      : "Complete";
+}
+
 function Repairs() {
   const { repairId } = useParams();
   const repairs = useRepairs();
@@ -56,11 +64,7 @@ function Repairs() {
       render: (repair) => (
         <Link
           aria-current={selectedRepair?.repair_id === repair.repair_id ? "page" : undefined}
-          className={`block rounded-md px-2 py-1 font-medium underline-offset-4 hover:underline ${
-            selectedRepair?.repair_id === repair.repair_id
-              ? "bg-accent text-accent-foreground"
-              : "text-primary"
-          }`}
+          className="block rounded-md px-2 py-1 font-medium text-primary underline underline-offset-4 hover:decoration-2"
           to={`/repairs/${repair.repair_id}`}
         >
           Repair #{repair.repair_id}
@@ -71,6 +75,18 @@ function Repairs() {
       id: "type",
       header: "Type",
       getValue: (repair) => repair.repair_type,
+    },
+    {
+      id: "status",
+      header: "Status",
+      getValue: (repair) => repair.status !== "complete",
+      getSearchValue: (repair) => formatRepairStatus(repair.status),
+      render: (repair) => formatRepairStatus(repair.status),
+    },
+    {
+      id: "rowable",
+      header: "Rowable",
+      getValue: (repair) => repair.is_rowable,
     },
     {
       id: "date",
@@ -84,6 +100,37 @@ function Repairs() {
         repair.boat_id === null
           ? "Not linked"
           : boatNames.get(repair.boat_id) ?? `Boat #${repair.boat_id}`,
+    },
+    {
+      id: "rower",
+      header: "Reported by",
+      getValue: (repair) =>
+        userNames.get(repair.user_id) ?? `User #${repair.user_id}`,
+      render: (repair) => (
+        <Link
+          className="text-primary underline underline-offset-4 hover:decoration-2"
+          to={`/rowers?rowerId=${encodeURIComponent(repair.user_id)}`}
+        >
+          {userNames.get(repair.user_id) ?? `User #${repair.user_id}`}
+        </Link>
+      ),
+    },
+    {
+      id: "checkout",
+      header: "Checkout",
+      getValue: (repair) =>
+        repair.check_out_id === null ? null : repair.check_out_id,
+      render: (repair) =>
+        repair.check_out_id === null ? (
+          "Not linked"
+        ) : (
+          <Link
+            className="text-primary underline underline-offset-4 hover:decoration-2"
+            to={`/checkouts/${repair.check_out_id}`}
+          >
+            Checkout #{repair.check_out_id}
+          </Link>
+        ),
     },
   ];
 
@@ -99,6 +146,11 @@ function Repairs() {
           emptyMessage="No repairs found."
           getRowId={(repair) => repair.repair_id}
           rows={repairList}
+          selectedRowId={selectedRepair?.repair_id}
+          defaultSort={[
+            { columnId: "status", direction: "descending" },
+            { columnId: "date", direction: "descending" },
+          ]}
           searchLabel="Search repairs"
         />
       }
@@ -125,13 +177,21 @@ function Repairs() {
                   <dd>{selectedRepair.date ?? "Not recorded"}</dd>
                 </div>
                 <div>
+                  <dt className="text-muted-foreground">Status</dt>
+                  <dd>{formatRepairStatus(selectedRepair.status)}</dd>
+                </div>
+                <div>
+                  <dt className="text-muted-foreground">Rowable</dt>
+                  <dd>{selectedRepair.is_rowable ? "Yes" : "No"}</dd>
+                </div>
+                <div>
                   <dt className="text-muted-foreground">Boat</dt>
                   <dd>
                     {selectedRepair.boat_id === null ? (
                       "Not linked"
                     ) : (
                       <Link
-                        className="text-primary underline-offset-4 hover:underline"
+                        className="text-primary underline underline-offset-4 hover:decoration-2"
                         to={`/boats?boatId=${selectedRepair.boat_id}`}
                       >
                         {boatNames.get(selectedRepair.boat_id) ??
@@ -147,7 +207,7 @@ function Repairs() {
                       "Not linked"
                     ) : (
                       <Link
-                        className="text-primary underline-offset-4 hover:underline"
+                        className="text-primary underline underline-offset-4 hover:decoration-2"
                         to={`/checkouts/${selectedRepair.check_out_id}`}
                       >
                         Checkout #{selectedRepair.check_out_id}
@@ -160,8 +220,15 @@ function Repairs() {
                   <dd>
                     {selectedRepair.user_id === null
                       ? "Not recorded"
-                      : userNames.get(selectedRepair.user_id) ??
-                        `User #${selectedRepair.user_id}`}
+                      : (
+                          <Link
+                            className="text-primary underline underline-offset-4 hover:decoration-2"
+                            to={`/rowers?rowerId=${encodeURIComponent(selectedRepair.user_id)}`}
+                          >
+                            {userNames.get(selectedRepair.user_id) ??
+                              `User #${selectedRepair.user_id}`}
+                          </Link>
+                        )}
                   </dd>
                 </div>
                 <div className="sm:col-span-2">

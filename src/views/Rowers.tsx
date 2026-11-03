@@ -86,11 +86,7 @@ function Rowers() {
           aria-current={
             selectedRower?.user_id === rower.user_id ? "page" : undefined
           }
-          className={`block rounded-md px-2 py-1 font-medium underline-offset-4 hover:underline ${
-            selectedRower?.user_id === rower.user_id
-              ? "bg-accent text-accent-foreground"
-              : "text-primary"
-          }`}
+          className="block rounded-md px-2 py-1 font-medium text-primary underline underline-offset-4 hover:decoration-2"
           to={`/rowers?rowerId=${encodeURIComponent(rower.user_id)}`}
         >
           {rower.user_name}
@@ -102,6 +98,16 @@ function Rowers() {
       header: "Type",
       getValue: (rower) => rower.user_type,
     },
+    {
+      id: "coach",
+      header: "Coach",
+      getValue: (rower) => rower.is_coach,
+    },
+    {
+      id: "active",
+      header: "Active",
+      getValue: (rower) => rower.is_active,
+    },
   ];
   const checkoutColumns: DataTableColumn<Checkout>[] = [
     {
@@ -110,7 +116,7 @@ function Rowers() {
       getValue: (checkout) => checkout.check_out_id,
       render: (checkout) => (
         <Link
-          className="text-primary underline-offset-4 hover:underline"
+          className="text-primary underline underline-offset-4 hover:decoration-2"
           to={`/checkouts/${checkout.check_out_id}`}
         >
           Checkout #{checkout.check_out_id}
@@ -160,6 +166,8 @@ function Rowers() {
           emptyMessage="No rowers found."
           getRowId={(rower) => rower.user_id}
           rows={rowerList}
+          selectedRowId={selectedRower?.user_id}
+          defaultSort={[{ columnId: "name", direction: "ascending" }]}
           searchLabel="Search rowers"
         />
       }
@@ -180,6 +188,14 @@ function Rowers() {
                 <div>
                   <dt className="text-muted-foreground">Type</dt>
                   <dd>{selectedRower.user_type}</dd>
+                </div>
+                <div>
+                  <dt className="text-muted-foreground">Coach</dt>
+                  <dd>{selectedRower.is_coach ? "Yes" : "No"}</dd>
+                </div>
+                <div>
+                  <dt className="text-muted-foreground">Active</dt>
+                  <dd>{selectedRower.is_active ? "Yes" : "No"}</dd>
                 </div>
                 <div>
                   <dt className="text-muted-foreground">
@@ -214,6 +230,7 @@ function Rowers() {
                 emptyMessage="No checkouts for this rower."
                 getRowId={(checkout) => checkout.check_out_id}
                 rows={rowerCheckouts}
+                defaultSort={[{ columnId: "date", direction: "descending" }]}
                 searchLabel="Search rower checkouts"
               />
             </CardContent>

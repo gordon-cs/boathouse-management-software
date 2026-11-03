@@ -17,6 +17,15 @@ import {
 import type { Checkout } from "@features/checkouts/api/checkouts.api";
 import { useUsers } from "@features/users/hooks/useUsers";
 import { useRepairs } from "@features/repairs/hooks/useRepairs";
+import type { Repair } from "@features/repairs/api/repairs.api";
+
+function formatRepairStatus(status: Repair["status"]) {
+  return status === "to_do"
+    ? "To do"
+    : status === "in_progress"
+      ? "In progress"
+      : "Complete";
+}
 
 function Checkouts() {
   const { checkoutId } = useParams();
@@ -86,7 +95,7 @@ function Checkouts() {
               ? "page"
               : undefined
           }
-          className="font-medium text-primary underline-offset-4 hover:underline"
+          className="font-medium text-primary underline underline-offset-4 hover:decoration-2"
           to={`/checkouts/${checkout.check_out_id}`}
         >
           Checkout #{checkout.check_out_id}
@@ -106,19 +115,53 @@ function Checkouts() {
     },
   ];
 
-  const selectedRowerNames = selectedCheckout
+  const selectedRowerIds = selectedCheckout
     ? [
-        userNames.get(selectedCheckout.user_id) ??
-          `User #${selectedCheckout.user_id}`,
-        ...(rowersByCheckout.get(selectedCheckout.check_out_id) ?? []).map(
-          (userId) => userNames.get(userId) ?? `User #${userId}`
-        ),
+        selectedCheckout.user_id,
+        ...(rowersByCheckout.get(selectedCheckout.check_out_id) ?? []),
       ]
     : [];
   const linkedRepairs =
     repairs.data?.filter(
       (repair) => repair.check_out_id === selectedCheckout?.check_out_id
     ) ?? [];
+  const linkedRepairColumns: DataTableColumn<Repair>[] = [
+    {
+      id: "repair",
+      header: "Repair",
+      getValue: (repair) => repair.repair_id,
+      render: (repair) => (
+        <Link
+          className="text-primary underline underline-offset-4 hover:decoration-2"
+          to={`/repairs/${repair.repair_id}`}
+        >
+          Repair #{repair.repair_id}
+        </Link>
+      ),
+    },
+    {
+      id: "type",
+      header: "Type",
+      getValue: (repair) => repair.repair_type,
+    },
+    {
+      id: "status",
+      header: "Status",
+      getValue: (repair) => repair.status !== "complete",
+      getSearchValue: (repair) => formatRepairStatus(repair.status),
+      render: (repair) => formatRepairStatus(repair.status),
+    },
+    {
+      id: "rowable",
+      header: "Rowable",
+      getValue: (repair) => repair.is_rowable,
+    },
+    {
+      id: "date",
+      header: "Date",
+      getValue: (repair) => repair.date,
+    },
+  ];
 
   return (
     <RecordBrowserLayout
@@ -132,6 +175,8 @@ function Checkouts() {
           emptyMessage="No checkouts found."
           getRowId={(checkout) => checkout.check_out_id}
           rows={checkoutList}
+          selectedRowId={selectedCheckout?.check_out_id}
+          defaultSort={[{ columnId: "date", direction: "descending" }]}
           searchLabel="Search checkouts"
         />
       }
@@ -151,7 +196,7 @@ function Checkouts() {
                   <dt className="text-muted-foreground">Boat</dt>
                   <dd>
                     <Link
-                      className="text-primary underline-offset-4 hover:underline"
+                      className="text-primary underline underline-offset-4 hover:decoration-2"
                       to={`/boats?boatId=${selectedCheckout.boat_id}`}
                     >
                       {boatNames.get(selectedCheckout.boat_id) ??
@@ -173,7 +218,19 @@ function Checkouts() {
                 </div>
                 <div className="sm:col-span-2">
                   <dt className="text-muted-foreground">Rowers</dt>
-                  <dd>{selectedRowerNames.join(", ")}</dd>
+                  <dd>
+                    {selectedRowerIds.map((userId, index) => (
+                      <span key={userId}>
+                        {index > 0 ? ", " : ""}
+                        <Link
+                          className="text-primary underline underline-offset-4 hover:decoration-2"
+                          to={`/rowers?rowerId=${encodeURIComponent(userId)}`}
+                        >
+                          {userNames.get(userId) ?? `User #${userId}`}
+                        </Link>
+                      </span>
+                    ))}
+                  </dd>
                 </div>
               </dl>
               <RecordNotes
@@ -191,25 +248,17 @@ function Checkouts() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {linkedRepairs.length ? (
-                <ul className="space-y-2">
-                  {linkedRepairs.map((repair) => (
-                    <li key={repair.repair_id}>
-                      <Link
-                        className="text-primary underline-offset-4 hover:underline"
-                        to={`/repairs/${repair.repair_id}`}
-                      >
-                        Repair #{repair.repair_id}
-                        {repair.repair_type ? ` — ${repair.repair_type}` : ""}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-sm text-muted-foreground">
-                  No repairs are linked to this checkout.
-                </p>
-              )}
+              <DataTable
+                columns={linkedRepairColumns}
+                emptyMessage="No repairs are linked to this checkout."
+                getRowId={(repair) => repair.repair_id}
+                rows={linkedRepairs}
+                defaultSort={[
+                  { columnId: "status", direction: "descending" },
+                  { columnId: "date", direction: "descending" },
+                ]}
+                searchLabel="Search checkout repairs"
+              />
             </CardContent>
           </Card>
         </>

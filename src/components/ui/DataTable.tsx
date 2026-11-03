@@ -12,23 +12,29 @@ import {
 } from "@/components/ui/table";
 
 type SortValue = string | number | boolean | null | undefined;
+type SortRule = {
+  columnId: string;
+  direction: "ascending" | "descending";
+};
 
 export type DataTableColumn<T> = {
   id: string;
   header: string;
-  getValue: (row: T) => SortValue;
-  getSearchValue?: (row: T) => string;
-  render?: (row: T) => ReactNode;
-  sortable?: boolean;
-  searchable?: boolean;
+  getValue: (row: T) => SortValue; // used for sorting, searching, and default rendering
+  getSearchValue?: (row: T) => string; // used for searching, defaults to getValue if not provided
+  render?: (row: T) => ReactNode; // used for custom rendering, defaults to getValue if not provided
+  sortable?: boolean; // used for sorting, defaults to true if not provided
+  searchable?: boolean; // used for searching, defaults to true if not provided
 };
 
 type DataTableProps<T> = {
   rows: T[];
   columns: DataTableColumn<T>[];
   getRowId: (row: T) => string | number;
-  emptyMessage: string;
-  searchLabel: string;
+  selectedRowId?: string | number;
+  defaultSort?: SortRule[];
+  emptyMessage: string; // message to display when there are no rows to show
+  searchLabel: string; // label for the search input, used for accessibility
 };
 
 function getSearchText(value: SortValue) {
@@ -81,15 +87,14 @@ function formatValue(value: SortValue) {
 function DataTable<T>({
   rows,
   columns,
-  getRowId,
+  getRowId, // function to get the unique ID for each row
+  selectedRowId, // optional ID of the currently selected row
+  defaultSort,
   emptyMessage,
   searchLabel,
 }: DataTableProps<T>) {
   const [query, setQuery] = useState("");
-  const [sort, setSort] = useState<{
-    columnId: string;
-    direction: "ascending" | "descending";
-  } | null>(null);
+  const [sort, setSort] = useState<SortRule[]>(defaultSort ?? []);
 
   const visibleRows = useMemo(() => {
     const normalizedQuery = query.trim().toLocaleLowerCase();
@@ -98,49 +103,61 @@ function DataTable<T>({
           columns.some(
             (column) =>
               column.searchable !== false &&
-              (column.getSearchValue?.(row) ??
-                getSearchText(column.getValue(row)))
+              (
+                column.getSearchValue?.(row) ??
+                getSearchText(column.getValue(row))
+              )
                 .toLocaleLowerCase()
-                .includes(normalizedQuery)
-          )
+                .includes(normalizedQuery),
+          ),
         )
       : rows;
 
-    if (!sort) {
-      return filteredRows;
-    }
-
-    const column = columns.find(({ id }) => id === sort.columnId);
-    if (!column) {
+    if (!sort.length) {
       return filteredRows;
     }
 
     return [...filteredRows].sort((left, right) => {
-      const leftValue = column.getValue(left);
-      const rightValue = column.getValue(right);
-      const comparison = compareValues(leftValue, rightValue);
+      for (const rule of sort) {
+        const column = columns.find(({ id }) => id === rule.columnId);
+        if (!column) {
+          continue;
+        }
 
-      if (
-        sort.direction === "descending" &&
-        leftValue != null &&
-        rightValue != null
-      ) {
-        return -comparison;
+        const leftValue = column.getValue(left);
+        const rightValue = column.getValue(right);
+        const comparison = compareValues(leftValue, rightValue);
+
+        if (comparison !== 0) {
+          if (
+            rule.direction === "descending" &&
+            leftValue != null &&
+            rightValue != null
+          ) {
+            return -comparison;
+          }
+
+          return comparison;
+        }
       }
 
-      return comparison;
+      return 0;
     });
   }, [columns, query, rows, sort]);
 
   function toggleSort(columnId: string) {
-    setSort((currentSort) => ({
-      columnId,
-      direction:
-        currentSort?.columnId === columnId &&
-        currentSort.direction === "ascending"
-          ? "descending"
-          : "ascending",
-    }));
+    setSort((currentSort) => {
+      const currentRule = currentSort.find((rule) => rule.columnId === columnId);
+      return [
+        {
+          columnId,
+          direction:
+            currentRule?.direction === "ascending"
+              ? "descending"
+              : "ascending",
+        },
+      ];
+    });
   }
 
   return (
@@ -161,15 +178,15 @@ function DataTable<T>({
         <TableHeader>
           <TableRow>
             {columns.map((column) => {
-              const isSorted = sort?.columnId === column.id;
+              const sortRule = sort.find((rule) => rule.columnId === column.id);
 
               return (
                 <TableHead
                   aria-sort={
                     column.sortable === false
                       ? undefined
-                      : isSorted
-                        ? sort.direction
+                      : sortRule
+                        ? sortRule.direction
                         : "none"
                   }
                   key={column.id}
@@ -179,8 +196,8 @@ function DataTable<T>({
                   ) : (
                     <Button
                       aria-label={`Sort by ${column.header}${
-                        isSorted
-                          ? sort.direction === "ascending"
+                        sortRule
+                          ? sortRule.direction === "ascending"
                             ? ", currently ascending"
                             : ", currently descending"
                           : ""
@@ -191,8 +208,8 @@ function DataTable<T>({
                       variant="ghost"
                     >
                       {column.header}
-                      {isSorted ? (
-                        sort.direction === "ascending" ? (
+                      {sortRule ? (
+                        sortRule.direction === "ascending" ? (
                           <ArrowUp aria-hidden="true" />
                         ) : (
                           <ArrowDown aria-hidden="true" />
@@ -209,17 +226,30 @@ function DataTable<T>({
         </TableHeader>
         <TableBody>
           {visibleRows.length ? (
-            visibleRows.map((row) => (
-              <TableRow key={getRowId(row)}>
-                {columns.map((column) => (
-                  <TableCell key={column.id}>
-                    {column.render
-                      ? column.render(row)
-                      : formatValue(column.getValue(row))}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
+            visibleRows.map((row) => {
+              const isSelected =
+                selectedRowId !== undefined && getRowId(row) === selectedRowId;
+
+              return (
+                <TableRow
+                  data-state={isSelected ? "selected" : undefined}
+                  className={
+                    isSelected
+                      ? "data-[state=selected]:bg-accent data-[state=selected]:text-accent-foreground data-[state=selected]:hover:bg-accent/80 [&>td]:font-medium [&>td:first-child]:border-l-4 [&>td:first-child]:border-l-primary"
+                      : undefined
+                  }
+                  key={getRowId(row)}
+                >
+                  {columns.map((column) => (
+                    <TableCell key={column.id}>
+                      {column.render
+                        ? column.render(row)
+                        : formatValue(column.getValue(row))}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              );
+            })
           ) : (
             <TableRow>
               <TableCell

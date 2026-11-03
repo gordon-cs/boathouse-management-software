@@ -17,6 +17,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
+function formatRepairStatus(status: Repair["status"]) {
+  return status === "to_do"
+    ? "To do"
+    : status === "in_progress"
+      ? "In progress"
+      : "Complete";
+}
+
 function Boats() {
   const [searchParams] = useSearchParams();
   const boats = useBoats();
@@ -53,11 +61,7 @@ function Boats() {
       render: (boat) => (
         <Link
           aria-current={selectedBoat?.boat_id === boat.boat_id ? "page" : undefined}
-          className={`block rounded-md px-2 py-1 font-medium underline-offset-4 hover:underline ${
-            selectedBoat?.boat_id === boat.boat_id
-              ? "bg-accent text-accent-foreground"
-              : "text-primary"
-          }`}
+          className="block rounded-md px-2 py-1 font-medium text-primary underline underline-offset-4 hover:decoration-2"
           to={`/boats?boatId=${boat.boat_id}`}
         >
           {boat.name ?? `Boat #${boat.boat_id}`}
@@ -68,6 +72,20 @@ function Boats() {
       id: "make",
       header: "Make",
       getValue: (boat) => boat.make,
+    },
+    {
+      id: "seats",
+      header: "Seats",
+      getValue: (boat) => boat.seats,
+    },
+    {
+      id: "weight-class",
+      header: "Weight class",
+      getValue: (boat) => boat.min_weight ?? boat.max_weight,
+      getSearchValue: (boat) =>
+        `${boat.min_weight ?? "?"}-${boat.max_weight ?? "?"} lbs`,
+      render: (boat) =>
+        `${boat.min_weight ?? "?"}–${boat.max_weight ?? "?"} lbs`,
     },
   ];
 
@@ -86,7 +104,7 @@ function Boats() {
       getValue: (checkout) => checkout.check_out_id,
       render: (checkout) => (
         <Link
-          className="text-primary underline-offset-4 hover:underline"
+          className="text-primary underline underline-offset-4 hover:decoration-2"
           to={`/checkouts/${checkout.check_out_id}`}
         >
           Checkout #{checkout.check_out_id}
@@ -99,6 +117,11 @@ function Boats() {
       header: "Time out",
       getValue: (checkout) => checkout.time_out,
     },
+    {
+      id: "time-in",
+      header: "Time in",
+      getValue: (checkout) => checkout.time_in,
+    },
   ];
   const repairColumns: DataTableColumn<Repair>[] = [
     {
@@ -107,7 +130,7 @@ function Boats() {
       getValue: (repair) => repair.repair_id,
       render: (repair) => (
         <Link
-          className="text-primary underline-offset-4 hover:underline"
+          className="text-primary underline underline-offset-4 hover:decoration-2"
           to={`/repairs/${repair.repair_id}`}
         >
           Repair #{repair.repair_id}
@@ -118,6 +141,18 @@ function Boats() {
       id: "type",
       header: "Type",
       getValue: (repair) => repair.repair_type,
+    },
+    {
+      id: "status",
+      header: "Status",
+      getValue: (repair) => repair.status !== "complete",
+      getSearchValue: (repair) => formatRepairStatus(repair.status),
+      render: (repair) => formatRepairStatus(repair.status),
+    },
+    {
+      id: "rowable",
+      header: "Rowable",
+      getValue: (repair) => repair.is_rowable,
     },
     { id: "date", header: "Date", getValue: (repair) => repair.date },
   ];
@@ -134,6 +169,8 @@ function Boats() {
           emptyMessage="No boats found."
           getRowId={(boat) => boat.boat_id}
           rows={boatList}
+          selectedRowId={selectedBoat?.boat_id}
+          defaultSort={[{ columnId: "boat", direction: "ascending" }]}
           searchLabel="Search boats"
         />
       }
@@ -171,6 +208,7 @@ function Boats() {
                 emptyMessage="No checkouts for this boat."
                 getRowId={(checkout) => checkout.check_out_id}
                 rows={selectedCheckouts}
+                defaultSort={[{ columnId: "date", direction: "descending" }]}
                 searchLabel="Search boat checkouts"
               />
             </CardContent>
@@ -189,6 +227,10 @@ function Boats() {
                 emptyMessage="No repairs for this boat."
                 getRowId={(repair) => repair.repair_id}
                 rows={selectedRepairs}
+                defaultSort={[
+                  { columnId: "status", direction: "descending" },
+                  { columnId: "date", direction: "descending" },
+                ]}
                 searchLabel="Search boat repairs"
               />
             </CardContent>

@@ -29,6 +29,20 @@ function BoatStats({ boat }: { boat: Boat }) {
         <dt className="text-muted-foreground">Pitch</dt>
         <dd>{boat.pitch ?? "Not recorded"}</dd>
       </div>
+      <div>
+        <dt className="text-muted-foreground">Available</dt>
+        <dd>
+          {boat.is_available === null
+            ? "Not recorded"
+            : boat.is_available
+              ? "Yes"
+              : "No"}
+        </dd>
+      </div>
+      <div>
+        <dt className="text-muted-foreground">In use</dt>
+        <dd>{boat.is_in_use ? "Yes" : "No"}</dd>
+      </div>
     </dl>
   );
 }
