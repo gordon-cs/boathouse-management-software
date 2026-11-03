@@ -49,10 +49,12 @@ export type Database = {
           boat_id: number
           inboard: number | null
           is_available: boolean | null
+          is_in_use: boolean
           make: string | null
           max_weight: number | null
           min_weight: number | null
           name: string | null
+          notes: string
           pitch: number | null
           seats: number
           year: number | null
@@ -61,10 +63,12 @@ export type Database = {
           boat_id?: number
           inboard?: number | null
           is_available?: boolean | null
+          is_in_use?: boolean
           make?: string | null
           max_weight?: number | null
           min_weight?: number | null
           name?: string | null
+          notes?: string
           pitch?: number | null
           seats: number
           year?: number | null
@@ -73,10 +77,12 @@ export type Database = {
           boat_id?: number
           inboard?: number | null
           is_available?: boolean | null
+          is_in_use?: boolean
           make?: string | null
           max_weight?: number | null
           min_weight?: number | null
           name?: string | null
+          notes?: string
           pitch?: number | null
           seats?: number
           year?: number | null
@@ -88,6 +94,7 @@ export type Database = {
           boat_id: number
           check_out_id: number
           date: string
+          notes: string
           time_in: string | null
           time_out: string | null
           user_id: string
@@ -96,6 +103,7 @@ export type Database = {
           boat_id: number
           check_out_id?: number
           date: string
+          notes?: string
           time_in?: string | null
           time_out?: string | null
           user_id: string
@@ -104,6 +112,7 @@ export type Database = {
           boat_id?: number
           check_out_id?: number
           date?: string
+          notes?: string
           time_in?: string | null
           time_out?: string | null
           user_id?: string
@@ -132,8 +141,10 @@ export type Database = {
           data: string | null
           date: string
           is_rowable: boolean
+          notes: string
           repair_id: number
           repair_type: string
+          status: Database["public"]["Enums"]["repair_status"]
           user_id: string
         }
         Insert: {
@@ -142,8 +153,10 @@ export type Database = {
           data?: string | null
           date: string
           is_rowable?: boolean
+          notes?: string
           repair_id?: number
           repair_type?: string
+          status?: Database["public"]["Enums"]["repair_status"]
           user_id: string
         }
         Update: {
@@ -152,8 +165,10 @@ export type Database = {
           data?: string | null
           date?: string
           is_rowable?: boolean
+          notes?: string
           repair_id?: number
           repair_type?: string
+          status?: Database["public"]["Enums"]["repair_status"]
           user_id?: string
         }
         Relationships: [
@@ -182,19 +197,28 @@ export type Database = {
       }
       user: {
         Row: {
+          is_active: boolean
+          is_coach: boolean
           is_single_approved: boolean | null
+          notes: string
           user_id: string
           user_name: string
           user_type: Database["public"]["Enums"]["user_type"]
         }
         Insert: {
+          is_active?: boolean
+          is_coach?: boolean
           is_single_approved?: boolean | null
+          notes?: string
           user_id?: string
           user_name: string
           user_type: Database["public"]["Enums"]["user_type"]
         }
         Update: {
+          is_active?: boolean
+          is_coach?: boolean
           is_single_approved?: boolean | null
+          notes?: string
           user_id?: string
           user_name?: string
           user_type?: Database["public"]["Enums"]["user_type"]
@@ -209,6 +233,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      repair_status: "to_do" | "in_progress" | "complete"
       user_type: "master" | "collegiate" | "junior" | "middie" | "other"
     }
     CompositeTypes: {
@@ -337,6 +362,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      repair_status: ["to_do", "in_progress", "complete"],
       user_type: ["master", "collegiate", "junior", "middie", "other"],
     },
   },

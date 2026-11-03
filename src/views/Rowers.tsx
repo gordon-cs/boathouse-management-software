@@ -2,6 +2,7 @@ import { Link, useSearchParams } from "react-router-dom";
 
 import DataTable, { type DataTableColumn } from "@/components/ui/DataTable";
 import RecordBrowserLayout from "@/components/ui/RecordBrowserLayout";
+import RecordNotes from "@/components/ui/RecordNotes";
 import {
   Card,
   CardContent,
@@ -170,7 +171,7 @@ function Rowers() {
               <CardTitle>{selectedRower.user_name}</CardTitle>
               <CardDescription>Rower information</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-6">
               <dl className="grid gap-x-8 gap-y-4 sm:grid-cols-2">
                 <div>
                   <dt className="text-muted-foreground">Rower ID</dt>
@@ -193,6 +194,10 @@ function Rowers() {
                   </dd>
                 </div>
               </dl>
+              <RecordNotes
+                key={selectedRower.user_id}
+                notes={selectedRower.notes}
+              />
             </CardContent>
           </Card>
 

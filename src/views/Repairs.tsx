@@ -1,6 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 import DataTable, { type DataTableColumn } from "@/components/ui/DataTable";
 import RecordBrowserLayout from "@/components/ui/RecordBrowserLayout";
+import RecordNotes from "@/components/ui/RecordNotes";
 import {
   Card,
   CardContent,
@@ -113,7 +114,7 @@ function Repairs() {
                 {selectedRepair.repair_type ?? "Repair details"}
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-6">
               <dl className="grid gap-x-8 gap-y-4 sm:grid-cols-2">
                 <div>
                   <dt className="text-muted-foreground">Type</dt>
@@ -170,6 +171,10 @@ function Repairs() {
                   </dd>
                 </div>
               </dl>
+              <RecordNotes
+                key={selectedRepair.repair_id}
+                notes={selectedRepair.notes}
+              />
             </CardContent>
           </Card>
 

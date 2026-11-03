@@ -8,6 +8,7 @@ import type { Repair } from "@features/repairs/api/repairs.api";
 import { Link, useSearchParams } from "react-router-dom";
 import DataTable, { type DataTableColumn } from "@/components/ui/DataTable";
 import RecordBrowserLayout from "@/components/ui/RecordBrowserLayout";
+import RecordNotes from "@/components/ui/RecordNotes";
 import {
   Card,
   CardContent,
@@ -147,7 +148,13 @@ function Boats() {
               <CardDescription>Boat information</CardDescription>
             </CardHeader>
             <CardContent>
-              <BoatStats boat={selectedBoat} />
+              <div className="space-y-6">
+                <BoatStats boat={selectedBoat} />
+                <RecordNotes
+                  key={selectedBoat.boat_id}
+                  notes={selectedBoat.notes}
+                />
+              </div>
             </CardContent>
           </Card>
 
