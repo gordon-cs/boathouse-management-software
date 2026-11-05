@@ -18,12 +18,14 @@ function getBoatName(boatId: number, boatNames: Map<number, string>) {
 function getRowerNames(
   checkout: Checkout,
   rowersByCheckout: Map<number, AdditionalRower[]>,
-  userNames: Map<number, string>
+  userNames: Map<string, string>
 ) {
   return [
     userNames.get(checkout.user_id) ?? `User #${checkout.user_id}`,
     ...(rowersByCheckout.get(checkout.check_out_id) ?? []).map(
-      (rower) => userNames.get(rower.user_id) ?? `User #${rower.user_id}`
+      (rower) =>
+        userNames.get(rower.additional_rower_id) ??
+        `User #${rower.additional_rower_id}`
     ),
   ].join(", ");
 }
@@ -79,9 +81,9 @@ function CheckoutCatalog() {
   const rowersByCheckout = new Map<number, AdditionalRower[]>();
 
   for (const rower of additionalRowersList ?? []) {
-    const rowers = rowersByCheckout.get(rower.check_out_id) ?? [];
-    rowers.push(rower);
-    rowersByCheckout.set(rower.check_out_id, rowers);
+    const checkoutRowers = rowersByCheckout.get(rower.check_out_id) ?? [];
+    checkoutRowers.push(rower);
+    rowersByCheckout.set(rower.check_out_id, checkoutRowers);
   }
 
   const columns: DataTableColumn<Checkout>[] = [

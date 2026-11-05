@@ -1,74 +1,49 @@
-/**
- * BoatStats component displays the statistics of the first boat in the list.
- * It should eventually show whatever boat is selected
- * The notes should also eventually be saved in the database.
- * @returns JSX.Element displaying the boat statistics.
- */
+import type { Boat } from "../api/boats.api";
 
-
-import { useBoats } from "../hooks/useBoats";
-import { Card } from "@/components/ui/card";
-
-function BoatStats() {
-  const {
-    error: boatsError,
-    isPending: boatsPending,
-    data: boatsList,
-  } = useBoats();
-
-  if (boatsPending) {
-    return <p className="text-sm text-muted-foreground">Loading boats...</p>;
-  }
-
-  if (boatsError) {
-    return (
-      <p className="text-sm text-destructive" role="alert">
-        Could not load boats: {boatsError.message}
-      </p>
-    );
-  }
-
-  if (!boatsList?.length) {
-    return <p className="text-sm text-muted-foreground">No boats found.</p>;
-  }
-
+function BoatStats({ boat }: { boat: Boat }) {
   return (
-    <Card className="grid grid-cols-2 gap-4 border-none shadow-none ring-0 px-6">
-    <div>
-        Make:
-        <br />
-        {boatsList?.[0]?.make}
-        <br />
-        <br />
-        Year:
-        <br />
-        {boatsList?.[0]?.year}
-        <br />
-        <br />
-        Seats:
-        <br />
-        {boatsList?.[0]?.seats}  
-    </div>
-    <div>
-        Inboard:
-        <br />
-        {boatsList?.[0]?.inboard}
-        "
-        <br />
-        <br />
-        Weight Class:
-        <br />
-        {boatsList?.[0]?.min_weight}
-        -
-        {boatsList?.[0]?.max_weight}
-        lbs
-        <br />
-        <br />
-        Pitch:
-        <br />
-        {boatsList?.[0]?.pitch}
-    </div>
-    </Card>
+    <dl className="grid gap-x-8 gap-y-4 sm:grid-cols-2">
+      <div>
+        <dt className="text-muted-foreground">Make</dt>
+        <dd>{boat.make ?? "Not recorded"}</dd>
+      </div>
+      <div>
+        <dt className="text-muted-foreground">Year</dt>
+        <dd>{boat.year ?? "Not recorded"}</dd>
+      </div>
+      <div>
+        <dt className="text-muted-foreground">Seats</dt>
+        <dd>{boat.seats}</dd>
+      </div>
+      <div>
+        <dt className="text-muted-foreground">Inboard</dt>
+        <dd>{boat.inboard === null ? "Not recorded" : `${boat.inboard} in`}</dd>
+      </div>
+      <div>
+        <dt className="text-muted-foreground">Weight class</dt>
+        <dd>
+          {boat.min_weight ?? "?"}–{boat.max_weight ?? "?"} lbs
+        </dd>
+      </div>
+      <div>
+        <dt className="text-muted-foreground">Pitch</dt>
+        <dd>{boat.pitch ?? "Not recorded"}</dd>
+      </div>
+      <div>
+        <dt className="text-muted-foreground">Available</dt>
+        <dd>
+          {boat.is_available === null
+            ? "Not recorded"
+            : boat.is_available
+              ? "Yes"
+              : "No"}
+        </dd>
+      </div>
+      <div>
+        <dt className="text-muted-foreground">In use</dt>
+        <dd>{boat.is_in_use ? "Yes" : "No"}</dd>
+      </div>
+    </dl>
   );
 }
 

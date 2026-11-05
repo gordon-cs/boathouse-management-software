@@ -16,31 +16,31 @@ export type Database = {
     Tables: {
       additional_rower: {
         Row: {
+          additional_rower_id: string
           check_out_id: number
-          user_id: number
         }
         Insert: {
+          additional_rower_id?: string
           check_out_id?: number
-          user_id: number
         }
         Update: {
+          additional_rower_id?: string
           check_out_id?: number
-          user_id?: number
         }
         Relationships: [
           {
-            foreignKeyName: "check_out_user_check_out_id_fkey"
-            columns: ["check_out_id"]
-            isOneToOne: true
-            referencedRelation: "check_out"
-            referencedColumns: ["check_out_id"]
-          },
-          {
-            foreignKeyName: "check_out_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: "additional_rower_additional_rower_id_fkey"
+            columns: ["additional_rower_id"]
             isOneToOne: false
             referencedRelation: "user"
             referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "check_out_user_check_out_id_fkey"
+            columns: ["check_out_id"]
+            isOneToOne: false
+            referencedRelation: "check_out"
+            referencedColumns: ["check_out_id"]
           },
         ]
       }
@@ -48,21 +48,27 @@ export type Database = {
         Row: {
           boat_id: number
           inboard: number | null
+          is_available: boolean | null
+          is_in_use: boolean
           make: string | null
           max_weight: number | null
           min_weight: number | null
           name: string | null
+          notes: string
           pitch: number | null
           seats: number
           year: number | null
         }
         Insert: {
-          boat_id: number
+          boat_id?: number
           inboard?: number | null
+          is_available?: boolean | null
+          is_in_use?: boolean
           make?: string | null
           max_weight?: number | null
           min_weight?: number | null
           name?: string | null
+          notes?: string
           pitch?: number | null
           seats: number
           year?: number | null
@@ -70,10 +76,13 @@ export type Database = {
         Update: {
           boat_id?: number
           inboard?: number | null
+          is_available?: boolean | null
+          is_in_use?: boolean
           make?: string | null
           max_weight?: number | null
           min_weight?: number | null
           name?: string | null
+          notes?: string
           pitch?: number | null
           seats?: number
           year?: number | null
@@ -85,25 +94,28 @@ export type Database = {
           boat_id: number
           check_out_id: number
           date: string
+          notes: string
           time_in: string | null
           time_out: string | null
-          user_id: number
+          user_id: string
         }
         Insert: {
           boat_id: number
-          check_out_id: number
+          check_out_id?: number
           date: string
+          notes?: string
           time_in?: string | null
           time_out?: string | null
-          user_id: number
+          user_id: string
         }
         Update: {
           boat_id?: number
           check_out_id?: number
           date?: string
+          notes?: string
           time_in?: string | null
           time_out?: string | null
-          user_id?: number
+          user_id?: string
         }
         Relationships: [
           {
@@ -114,7 +126,7 @@ export type Database = {
             referencedColumns: ["boat_id"]
           },
           {
-            foreignKeyName: "check_out_user_id_fkey1"
+            foreignKeyName: "check_out_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "user"
@@ -124,31 +136,40 @@ export type Database = {
       }
       repair: {
         Row: {
-          boat_id: number | null
+          boat_id: number
           check_out_id: number | null
           data: string | null
-          date: string | null
+          date: string
+          is_rowable: boolean
+          notes: string
           repair_id: number
-          repair_type: string | null
-          user_id: number | null
+          repair_type: string
+          status: Database["public"]["Enums"]["repair_status"]
+          user_id: string
         }
         Insert: {
-          boat_id?: number | null
+          boat_id: number
           check_out_id?: number | null
           data?: string | null
-          date?: string | null
-          repair_id: number
-          repair_type?: string | null
-          user_id?: number | null
+          date: string
+          is_rowable?: boolean
+          notes?: string
+          repair_id?: number
+          repair_type?: string
+          status?: Database["public"]["Enums"]["repair_status"]
+          user_id: string
         }
         Update: {
-          boat_id?: number | null
+          boat_id?: number
           check_out_id?: number | null
           data?: string | null
-          date?: string | null
+          date?: string
+          is_rowable?: boolean
+          notes?: string
           repair_id?: number
-          repair_type?: string | null
-          user_id?: number | null
+          repair_type?: string
+          status?: Database["public"]["Enums"]["repair_status"]
+          user_id?: string
         }
         Relationships: [
           {
@@ -176,20 +197,29 @@ export type Database = {
       }
       user: {
         Row: {
+          is_active: boolean
+          is_coach: boolean
           is_single_approved: boolean | null
-          user_id: number
+          notes: string
+          user_id: string
           user_name: string
           user_type: Database["public"]["Enums"]["user_type"]
         }
         Insert: {
+          is_active?: boolean
+          is_coach?: boolean
           is_single_approved?: boolean | null
-          user_id: number
+          notes?: string
+          user_id?: string
           user_name: string
           user_type: Database["public"]["Enums"]["user_type"]
         }
         Update: {
+          is_active?: boolean
+          is_coach?: boolean
           is_single_approved?: boolean | null
-          user_id?: number
+          notes?: string
+          user_id?: string
           user_name?: string
           user_type?: Database["public"]["Enums"]["user_type"]
         }
@@ -203,6 +233,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      repair_status: "to_do" | "in_progress" | "complete"
       user_type: "master" | "collegiate" | "junior" | "middie" | "other"
     }
     CompositeTypes: {
@@ -331,6 +362,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      repair_status: ["to_do", "in_progress", "complete"],
       user_type: ["master", "collegiate", "junior", "middie", "other"],
     },
   },
