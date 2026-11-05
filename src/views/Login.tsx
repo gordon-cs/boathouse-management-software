@@ -31,7 +31,7 @@ export default function Login() {
         // AuthContext automatically picks up the session change via onAuthStateChange
         navigate(from, { replace: true });
       }
-    } catch (err) {
+    } catch {
       setError('An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);
