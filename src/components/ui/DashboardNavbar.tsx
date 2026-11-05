@@ -2,7 +2,14 @@
 import { useState } from "react";
 import type { ComponentProps } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { Ship, Users, Wrench, LogOut, ClipboardList } from "lucide-react";
+import {
+  Ship,
+  Users,
+  Wrench,
+  LogOut,
+  ClipboardList,
+  UserRound,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -11,6 +18,7 @@ import { supabase } from "@/lib/supabaseClient";
 const navItems = [
   { label: "Boats", path: "/boats", icon: Ship },
   { label: "Checkouts", path: "/checkouts", icon: ClipboardList },
+  { label: "Rower View", path: "/rower-checkouts", icon: UserRound },
   { label: "Rowers", path: "/rowers", icon: Users },
   { label: "Repairs", path: "/repairs", icon: Wrench },
 ];
