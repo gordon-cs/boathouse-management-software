@@ -1,5 +1,25 @@
-import { Fragment } from "react";
+import DataTable, { type DataTableColumn } from "@/components/ui/DataTable";
+
+import type { User } from "../api/users.api";
 import { useUsers } from "../hooks/useUsers";
+
+const columns: DataTableColumn<User>[] = [
+  {
+    id: "name",
+    header: "Name",
+    getValue: (user) => user.user_name,
+  },
+  {
+    id: "type",
+    header: "Type",
+    getValue: (user) => user.user_type,
+  },
+  {
+    id: "single-seat-approval",
+    header: "Single-seat approval",
+    getValue: (user) => user.is_single_approved === true,
+  },
+];
 
 function UserCatalog() {
   const {
@@ -9,26 +29,25 @@ function UserCatalog() {
   } = useUsers();
 
   if (usersPending) {
-    return <p>Loading boats...</p>;
+    return <p className="text-sm text-muted-foreground">Loading users...</p>;
   }
 
   if (usersError) {
-    return <p>Could not load boats: {usersError.message}</p>;
+    return (
+      <p className="text-sm text-destructive" role="alert">
+        Could not load users: {usersError.message}
+      </p>
+    );
   }
 
   return (
-    <>
-      <h1>Users</h1>
-      {usersList?.map((user) => (
-        <Fragment key={user.user_id}>
-          <h2>{user.user_name}</h2>
-          <p>
-            {user.user_type}, approved to row single:{" "}
-            {user.is_single_approved ? "yes" : "no"}
-          </p>
-        </Fragment>
-      ))}
-    </>
+    <DataTable
+      columns={columns}
+      emptyMessage="No users found."
+      getRowId={(user) => user.user_id}
+      rows={usersList ?? []}
+      searchLabel="Search users"
+    />
   );
 }
 
