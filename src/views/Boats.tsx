@@ -111,7 +111,6 @@ function Boats() {
         </Link>
       ),
     },
-    { id: "date", header: "Date", getValue: (checkout) => checkout.date },
     {
       id: "time",
       header: "Time out",

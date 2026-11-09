@@ -86,8 +86,7 @@ function Checkouts() {
       id: "checkout",
       header: "Checkout",
       getValue: (checkout) => checkout.check_out_id,
-      getSearchValue: (checkout) =>
-        `Checkout #${checkout.check_out_id} ${checkout.date}`,
+      getSearchValue: (checkout) => `Checkout #${checkout.check_out_id}`,
       render: (checkout) => (
         <Link
           aria-current={
@@ -101,11 +100,6 @@ function Checkouts() {
           Checkout #{checkout.check_out_id}
         </Link>
       ),
-    },
-    {
-      id: "date",
-      header: "Date",
-      getValue: (checkout) => checkout.date,
     },
     {
       id: "boat",
@@ -176,7 +170,7 @@ function Checkouts() {
           getRowId={(checkout) => checkout.check_out_id}
           rows={checkoutList}
           selectedRowId={selectedCheckout?.check_out_id}
-          defaultSort={[{ columnId: "date", direction: "descending" }]}
+          defaultSort={[{ columnId: "checkout", direction: "descending" }]}
           searchLabel="Search checkouts"
         />
       }
@@ -188,7 +182,6 @@ function Checkouts() {
               <CardTitle>
                 Checkout #{selectedCheckout.check_out_id}
               </CardTitle>
-              <CardDescription>{selectedCheckout.date}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <dl className="grid gap-x-8 gap-y-4 sm:grid-cols-2">
@@ -203,10 +196,6 @@ function Checkouts() {
                         `Boat #${selectedCheckout.boat_id}`}
                     </Link>
                   </dd>
-                </div>
-                <div>
-                  <dt className="text-muted-foreground">Date</dt>
-                  <dd>{selectedCheckout.date}</dd>
                 </div>
                 <div>
                   <dt className="text-muted-foreground">Time out</dt>

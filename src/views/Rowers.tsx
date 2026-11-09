@@ -124,11 +124,6 @@ function Rowers() {
       ),
     },
     {
-      id: "date",
-      header: "Date",
-      getValue: (checkout) => checkout.date,
-    },
-    {
       id: "boat",
       header: "Boat",
       getValue: (checkout) =>

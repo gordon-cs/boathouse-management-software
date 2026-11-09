@@ -49,11 +49,11 @@ export type Database = {
           boat_id: number
           inboard: number | null
           is_available: boolean | null
-          is_in_use: boolean
+          is_retired: boolean
           make: string | null
           max_weight: number | null
           min_weight: number | null
-          name: string | null
+          name: string
           notes: string
           pitch: number | null
           seats: number
@@ -63,11 +63,11 @@ export type Database = {
           boat_id?: number
           inboard?: number | null
           is_available?: boolean | null
-          is_in_use?: boolean
+          is_retired?: boolean
           make?: string | null
           max_weight?: number | null
           min_weight?: number | null
-          name?: string | null
+          name: string
           notes?: string
           pitch?: number | null
           seats: number
@@ -77,11 +77,11 @@ export type Database = {
           boat_id?: number
           inboard?: number | null
           is_available?: boolean | null
-          is_in_use?: boolean
+          is_retired?: boolean
           make?: string | null
           max_weight?: number | null
           min_weight?: number | null
-          name?: string | null
+          name?: string
           notes?: string
           pitch?: number | null
           seats?: number
@@ -93,27 +93,24 @@ export type Database = {
         Row: {
           boat_id: number
           check_out_id: number
-          date: string
           notes: string
-          time_in: string | null
+          time_in: string
           time_out: string | null
           user_id: string
         }
         Insert: {
           boat_id: number
           check_out_id?: number
-          date: string
           notes?: string
-          time_in?: string | null
+          time_in?: string
           time_out?: string | null
           user_id: string
         }
         Update: {
           boat_id?: number
           check_out_id?: number
-          date?: string
           notes?: string
-          time_in?: string | null
+          time_in?: string
           time_out?: string | null
           user_id?: string
         }
@@ -137,11 +134,11 @@ export type Database = {
       repair: {
         Row: {
           boat_id: number
-          check_out_id: number | null
+          check_out_id: number
           data: string | null
           date: string
           is_rowable: boolean
-          notes: string
+          notes: string | null
           repair_id: number
           repair_type: string
           status: Database["public"]["Enums"]["repair_status"]
@@ -149,11 +146,11 @@ export type Database = {
         }
         Insert: {
           boat_id: number
-          check_out_id?: number | null
+          check_out_id: number
           data?: string | null
           date: string
           is_rowable?: boolean
-          notes?: string
+          notes?: string | null
           repair_id?: number
           repair_type?: string
           status?: Database["public"]["Enums"]["repair_status"]
@@ -161,11 +158,11 @@ export type Database = {
         }
         Update: {
           boat_id?: number
-          check_out_id?: number | null
+          check_out_id?: number
           data?: string | null
           date?: string
           is_rowable?: boolean
-          notes?: string
+          notes?: string | null
           repair_id?: number
           repair_type?: string
           status?: Database["public"]["Enums"]["repair_status"]
@@ -199,7 +196,7 @@ export type Database = {
         Row: {
           is_active: boolean
           is_coach: boolean
-          is_single_approved: boolean | null
+          is_single_approved: boolean
           notes: string
           user_id: string
           user_name: string
@@ -208,7 +205,7 @@ export type Database = {
         Insert: {
           is_active?: boolean
           is_coach?: boolean
-          is_single_approved?: boolean | null
+          is_single_approved?: boolean
           notes?: string
           user_id?: string
           user_name: string
@@ -217,7 +214,7 @@ export type Database = {
         Update: {
           is_active?: boolean
           is_coach?: boolean
-          is_single_approved?: boolean | null
+          is_single_approved?: boolean
           notes?: string
           user_id?: string
           user_name?: string
