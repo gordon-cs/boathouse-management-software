@@ -13,6 +13,7 @@ import { useBoats } from "@features/boats/hooks/useBoats";
 import { useRepairs } from "@features/repairs/hooks/useRepairs";
 import type { Repair } from "@features/repairs/api/repairs.api";
 import { useUsers } from "@features/users/hooks/useUsers";
+import { getUserDisplayName } from "@features/users/api/users.api";
 
 function formatRepairStatus(status: Repair["status"]) {
   return status === "to_do"
@@ -41,7 +42,10 @@ function Repairs() {
     );
   }
 
-  const repairList = repairs.data ?? [];
+  const boatIds = new Set((boats.data ?? []).map((boat) => boat.boat_id));
+  const repairList = (repairs.data ?? []).filter((repair) =>
+    boatIds.has(repair.object_id)
+  );
   const selectedRepair =
     repairList.find((repair) => repair.repair_id === Number(repairId)) ??
     (repairId ? undefined : repairList[0]);
@@ -52,7 +56,7 @@ function Repairs() {
     ])
   );
   const userNames = new Map(
-    (users.data ?? []).map((user) => [user.user_id, user.user_name])
+    (users.data ?? []).map((user) => [user.user_id, getUserDisplayName(user)])
   );
   const columns: DataTableColumn<Repair>[] = [
     {
@@ -86,7 +90,7 @@ function Repairs() {
     {
       id: "rowable",
       header: "Rowable",
-      getValue: (repair) => repair.is_rowable,
+      getValue: (repair) => repair.is_usable,
     },
     {
       id: "date",
@@ -97,9 +101,7 @@ function Repairs() {
       id: "boat",
       header: "Boat",
       getValue: (repair) =>
-        repair.boat_id === null
-          ? "Not linked"
-          : boatNames.get(repair.boat_id) ?? `Boat #${repair.boat_id}`,
+        boatNames.get(repair.object_id) ?? `Boat #${repair.object_id}`,
     },
     {
       id: "rower",
@@ -182,22 +184,18 @@ function Repairs() {
                 </div>
                 <div>
                   <dt className="text-muted-foreground">Rowable</dt>
-                  <dd>{selectedRepair.is_rowable ? "Yes" : "No"}</dd>
+                  <dd>{selectedRepair.is_usable ? "Yes" : "No"}</dd>
                 </div>
                 <div>
                   <dt className="text-muted-foreground">Boat</dt>
                   <dd>
-                    {selectedRepair.boat_id === null ? (
-                      "Not linked"
-                    ) : (
-                      <Link
-                        className="text-primary underline underline-offset-4 hover:decoration-2"
-                        to={`/boats?boatId=${selectedRepair.boat_id}`}
-                      >
-                        {boatNames.get(selectedRepair.boat_id) ??
-                          `Boat #${selectedRepair.boat_id}`}
-                      </Link>
-                    )}
+                    <Link
+                      className="text-primary underline underline-offset-4 hover:decoration-2"
+                      to={`/boats?boatId=${selectedRepair.object_id}`}
+                    >
+                      {boatNames.get(selectedRepair.object_id) ??
+                        `Boat #${selectedRepair.object_id}`}
+                    </Link>
                   </dd>
                 </div>
                 <div>

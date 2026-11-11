@@ -87,40 +87,48 @@ export type Database = {
           seats?: number
           year?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "boat_boat_id_fkey"
+            columns: ["boat_id"]
+            isOneToOne: true
+            referencedRelation: "repairable_object"
+            referencedColumns: ["object_id"]
+          },
+        ]
       }
       check_out: {
         Row: {
-          boat_id: number
           check_out_id: number
           notes: string
-          time_in: string
-          time_out: string | null
+          object_id: number
+          time_in: string | null
+          time_out: string
           user_id: string
         }
         Insert: {
-          boat_id: number
           check_out_id?: number
           notes?: string
-          time_in?: string
-          time_out?: string | null
+          object_id: number
+          time_in?: string | null
+          time_out?: string
           user_id: string
         }
         Update: {
-          boat_id?: number
           check_out_id?: number
           notes?: string
-          time_in?: string
-          time_out?: string | null
+          object_id?: number
+          time_in?: string | null
+          time_out?: string
           user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "check_out_log_boat_id_fkey"
-            columns: ["boat_id"]
+            foreignKeyName: "check_out_object_id_fkey"
+            columns: ["object_id"]
             isOneToOne: false
-            referencedRelation: "boat"
-            referencedColumns: ["boat_id"]
+            referencedRelation: "repairable_object"
+            referencedColumns: ["object_id"]
           },
           {
             foreignKeyName: "check_out_user_id_fkey"
@@ -131,38 +139,143 @@ export type Database = {
           },
         ]
       }
+      coaches: {
+        Row: {
+          coach_id: string
+        }
+        Insert: {
+          coach_id?: string
+        }
+        Update: {
+          coach_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "Coaches_coach_id_fkey"
+            columns: ["coach_id"]
+            isOneToOne: true
+            referencedRelation: "user"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      ergs: {
+        Row: {
+          erg_id: number
+          is_available: boolean | null
+          is_retired: boolean | null
+          model: string | null
+          name: string | null
+          notes: string | null
+          number: number
+          year: number
+        }
+        Insert: {
+          erg_id?: number
+          is_available?: boolean | null
+          is_retired?: boolean | null
+          model?: string | null
+          name?: string | null
+          notes?: string | null
+          number: number
+          year: number
+        }
+        Update: {
+          erg_id?: number
+          is_available?: boolean | null
+          is_retired?: boolean | null
+          model?: string | null
+          name?: string | null
+          notes?: string | null
+          number?: number
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ergs_erg_id_fkey"
+            columns: ["erg_id"]
+            isOneToOne: true
+            referencedRelation: "repairable_object"
+            referencedColumns: ["object_id"]
+          },
+        ]
+      }
+      oars: {
+        Row: {
+          is_available: boolean | null
+          is_retired: boolean | null
+          make: string | null
+          notes: string | null
+          oars_id: number
+          pair: string | null
+          set: string | null
+          type: Database["public"]["Enums"]["oar_type"]
+          year: number | null
+        }
+        Insert: {
+          is_available?: boolean | null
+          is_retired?: boolean | null
+          make?: string | null
+          notes?: string | null
+          oars_id?: number
+          pair?: string | null
+          set?: string | null
+          type: Database["public"]["Enums"]["oar_type"]
+          year?: number | null
+        }
+        Update: {
+          is_available?: boolean | null
+          is_retired?: boolean | null
+          make?: string | null
+          notes?: string | null
+          oars_id?: number
+          pair?: string | null
+          set?: string | null
+          type?: Database["public"]["Enums"]["oar_type"]
+          year?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "oars_oars_id_fkey"
+            columns: ["oars_id"]
+            isOneToOne: true
+            referencedRelation: "repairable_object"
+            referencedColumns: ["object_id"]
+          },
+        ]
+      }
       repair: {
         Row: {
-          boat_id: number
-          check_out_id: number
+          check_out_id: number | null
           data: string | null
           date: string
-          is_rowable: boolean
+          is_usable: boolean
           notes: string | null
+          object_id: number
           repair_id: number
           repair_type: string
           status: Database["public"]["Enums"]["repair_status"]
           user_id: string
         }
         Insert: {
-          boat_id: number
-          check_out_id: number
+          check_out_id?: number | null
           data?: string | null
           date: string
-          is_rowable?: boolean
+          is_usable?: boolean
           notes?: string | null
+          object_id: number
           repair_id?: number
           repair_type?: string
           status?: Database["public"]["Enums"]["repair_status"]
-          user_id: string
+          user_id?: string
         }
         Update: {
-          boat_id?: number
-          check_out_id?: number
+          check_out_id?: number | null
           data?: string | null
           date?: string
-          is_rowable?: boolean
+          is_usable?: boolean
           notes?: string | null
+          object_id?: number
           repair_id?: number
           repair_type?: string
           status?: Database["public"]["Enums"]["repair_status"]
@@ -170,18 +283,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "repair_boat_id_fkey"
-            columns: ["boat_id"]
-            isOneToOne: false
-            referencedRelation: "boat"
-            referencedColumns: ["boat_id"]
-          },
-          {
             foreignKeyName: "repair_check_out_id_fkey"
             columns: ["check_out_id"]
             isOneToOne: false
             referencedRelation: "check_out"
             referencedColumns: ["check_out_id"]
+          },
+          {
+            foreignKeyName: "repair_object_id_fkey"
+            columns: ["object_id"]
+            isOneToOne: false
+            referencedRelation: "repairable_object"
+            referencedColumns: ["object_id"]
           },
           {
             foreignKeyName: "repair_user_id_fkey"
@@ -192,32 +305,50 @@ export type Database = {
           },
         ]
       }
+      repairable_object: {
+        Row: {
+          object_id: number
+          type: Database["public"]["Enums"]["object_type"]
+        }
+        Insert: {
+          object_id?: number
+          type: Database["public"]["Enums"]["object_type"]
+        }
+        Update: {
+          object_id?: number
+          type?: Database["public"]["Enums"]["object_type"]
+        }
+        Relationships: []
+      }
       user: {
         Row: {
           is_active: boolean
-          is_coach: boolean
           is_single_approved: boolean
           notes: string
+          preferred_name: string | null
+          user_first_name: string
           user_id: string
-          user_name: string
+          user_last_name: string
           user_type: Database["public"]["Enums"]["user_type"]
         }
         Insert: {
           is_active?: boolean
-          is_coach?: boolean
           is_single_approved?: boolean
           notes?: string
+          preferred_name?: string | null
+          user_first_name: string
           user_id?: string
-          user_name: string
+          user_last_name: string
           user_type: Database["public"]["Enums"]["user_type"]
         }
         Update: {
           is_active?: boolean
-          is_coach?: boolean
           is_single_approved?: boolean
           notes?: string
+          preferred_name?: string | null
+          user_first_name?: string
           user_id?: string
-          user_name?: string
+          user_last_name?: string
           user_type?: Database["public"]["Enums"]["user_type"]
         }
         Relationships: []
@@ -230,6 +361,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      oar_type: "Sculling" | "Sweeping"
+      object_type: "boat" | "oar" | "erg"
       repair_status: "to_do" | "in_progress" | "complete"
       user_type: "master" | "collegiate" | "junior" | "middie" | "other"
     }
@@ -359,6 +492,8 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      oar_type: ["Sculling", "Sweeping"],
+      object_type: ["boat", "oar", "erg"],
       repair_status: ["to_do", "in_progress", "complete"],
       user_type: ["master", "collegiate", "junior", "middie", "other"],
     },

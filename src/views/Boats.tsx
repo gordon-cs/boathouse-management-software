@@ -91,10 +91,10 @@ function Boats() {
 
   const selectedCheckouts =
     checkouts.data?.filter(
-      (checkout) => checkout.boat_id === selectedBoat?.boat_id
+      (checkout) => checkout.object_id === selectedBoat?.boat_id
     ) ?? [];
   const selectedRepairs =
-    repairs.data?.filter((repair) => repair.boat_id === selectedBoat?.boat_id) ??
+    repairs.data?.filter((repair) => repair.object_id === selectedBoat?.boat_id) ??
     [];
 
   const checkoutColumns: DataTableColumn<Checkout>[] = [
@@ -151,7 +151,7 @@ function Boats() {
     {
       id: "rowable",
       header: "Rowable",
-      getValue: (repair) => repair.is_rowable,
+      getValue: (repair) => repair.is_usable,
     },
     { id: "date", header: "Date", getValue: (repair) => repair.date },
   ];
@@ -207,7 +207,7 @@ function Boats() {
                 emptyMessage="No checkouts for this boat."
                 getRowId={(checkout) => checkout.check_out_id}
                 rows={selectedCheckouts}
-                defaultSort={[{ columnId: "date", direction: "descending" }]}
+                defaultSort={[{ columnId: "time", direction: "descending" }]}
                 searchLabel="Search boat checkouts"
               />
             </CardContent>

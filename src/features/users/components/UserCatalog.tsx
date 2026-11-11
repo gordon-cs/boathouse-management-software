@@ -1,13 +1,14 @@
 import DataTable, { type DataTableColumn } from "@/components/ui/DataTable";
 
 import type { User } from "../api/users.api";
+import { getUserDisplayName } from "../api/users.api";
 import { useUsers } from "../hooks/useUsers";
 
 const columns: DataTableColumn<User>[] = [
   {
     id: "name",
     header: "Name",
-    getValue: (user) => user.user_name,
+    getValue: getUserDisplayName,
   },
   {
     id: "type",

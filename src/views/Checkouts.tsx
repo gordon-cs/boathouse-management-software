@@ -18,6 +18,7 @@ import type { Checkout } from "@features/checkouts/api/checkouts.api";
 import { useUsers } from "@features/users/hooks/useUsers";
 import { useRepairs } from "@features/repairs/hooks/useRepairs";
 import type { Repair } from "@features/repairs/api/repairs.api";
+import { getUserDisplayName } from "@features/users/api/users.api";
 
 function formatRepairStatus(status: Repair["status"]) {
   return status === "to_do"
@@ -62,10 +63,14 @@ function Checkouts() {
   }
 
   const checkoutList = checkouts.data ?? [];
+  const boatIds = new Set((boats.data ?? []).map((boat) => boat.boat_id));
+  const boatCheckoutList = checkoutList.filter((checkout) =>
+    boatIds.has(checkout.object_id)
+  );
   const selectedCheckout =
-    checkoutList.find(
+    boatCheckoutList.find(
       (checkout) => checkout.check_out_id === Number(checkoutId)
-    ) ?? (checkoutId ? undefined : checkoutList[0]);
+    ) ?? (checkoutId ? undefined : boatCheckoutList[0]);
   const boatNames = new Map(
     (boats.data ?? []).map((boat) => [
       boat.boat_id,
@@ -73,7 +78,7 @@ function Checkouts() {
     ])
   );
   const userNames = new Map(
-    (users.data ?? []).map((user) => [user.user_id, user.user_name])
+    (users.data ?? []).map((user) => [user.user_id, getUserDisplayName(user)])
   );
   const rowersByCheckout = new Map<number, string[]>();
   for (const rower of additionalRowers.data ?? []) {
@@ -105,7 +110,7 @@ function Checkouts() {
       id: "boat",
       header: "Boat",
       getValue: (checkout) =>
-        boatNames.get(checkout.boat_id) ?? `Boat #${checkout.boat_id}`,
+        boatNames.get(checkout.object_id) ?? `Boat #${checkout.object_id}`,
     },
   ];
 
@@ -117,7 +122,9 @@ function Checkouts() {
     : [];
   const linkedRepairs =
     repairs.data?.filter(
-      (repair) => repair.check_out_id === selectedCheckout?.check_out_id
+      (repair) =>
+        repair.check_out_id === selectedCheckout?.check_out_id &&
+        repair.object_id === selectedCheckout.object_id
     ) ?? [];
   const linkedRepairColumns: DataTableColumn<Repair>[] = [
     {
@@ -148,7 +155,7 @@ function Checkouts() {
     {
       id: "rowable",
       header: "Rowable",
-      getValue: (repair) => repair.is_rowable,
+      getValue: (repair) => repair.is_usable,
     },
     {
       id: "date",
@@ -168,7 +175,7 @@ function Checkouts() {
           columns={columns}
           emptyMessage="No checkouts found."
           getRowId={(checkout) => checkout.check_out_id}
-          rows={checkoutList}
+          rows={boatCheckoutList}
           selectedRowId={selectedCheckout?.check_out_id}
           defaultSort={[{ columnId: "checkout", direction: "descending" }]}
           searchLabel="Search checkouts"
@@ -190,10 +197,10 @@ function Checkouts() {
                   <dd>
                     <Link
                       className="text-primary underline underline-offset-4 hover:decoration-2"
-                      to={`/boats?boatId=${selectedCheckout.boat_id}`}
+                      to={`/boats?boatId=${selectedCheckout.object_id}`}
                     >
-                      {boatNames.get(selectedCheckout.boat_id) ??
-                        `Boat #${selectedCheckout.boat_id}`}
+                      {boatNames.get(selectedCheckout.object_id) ??
+                        `Boat #${selectedCheckout.object_id}`}
                     </Link>
                   </dd>
                 </div>
@@ -255,7 +262,7 @@ function Checkouts() {
         <Card>
           <CardContent className="py-6">
             <p className="text-sm text-muted-foreground">
-              {checkoutList.length
+              {boatCheckoutList.length
                 ? checkoutId
                   ? `Checkout #${checkoutId} was not found. Select a checkout from the list.`
                   : "Select a checkout from the list to view its information."

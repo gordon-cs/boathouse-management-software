@@ -10,6 +10,7 @@ import type {
   AdditionalRower,
   Checkout,
 } from "@features/checkouts/api/checkouts.api";
+import { getUserDisplayName } from "@features/users/api/users.api";
 
 function getBoatName(boatId: number, boatNames: Map<number, string>) {
   return boatNames.get(boatId) ?? `Boat #${boatId}`;
@@ -76,8 +77,9 @@ function CheckoutCatalog() {
     ])
   );
   const userNames = new Map(
-    (usersList ?? []).map((user) => [user.user_id, user.user_name])
+    (usersList ?? []).map((user) => [user.user_id, getUserDisplayName(user)])
   );
+  const boatIds = new Set((boatsList ?? []).map((boat) => boat.boat_id));
   const rowersByCheckout = new Map<number, AdditionalRower[]>();
 
   for (const rower of additionalRowersList ?? []) {
@@ -95,9 +97,14 @@ function CheckoutCatalog() {
       render: (checkout) => `Checkout #${checkout.check_out_id}`,
     },
     {
+      id: "date",
+      header: "Date",
+      getValue: (checkout) => checkout.time_out,
+    },
+    {
       id: "boat",
       header: "Boat",
-      getValue: (checkout) => getBoatName(checkout.boat_id, boatNames),
+      getValue: (checkout) => getBoatName(checkout.object_id, boatNames),
     },
     {
       id: "time-out",
@@ -122,7 +129,9 @@ function CheckoutCatalog() {
       columns={columns}
       emptyMessage="No checkouts found."
       getRowId={(checkout) => checkout.check_out_id}
-      rows={checkoutsList ?? []}
+      rows={(checkoutsList ?? []).filter((checkout) =>
+        boatIds.has(checkout.object_id)
+      )}
       searchLabel="Search checkouts"
     />
   );

@@ -59,9 +59,15 @@ export function AuthProvider({
 
         return createUser({
           user_id: userId,
-          user_name: email.split("@")[0],
+          user_first_name:
+            typeof authUser.user_metadata.user_first_name === "string"
+              ? authUser.user_metadata.user_first_name
+              : email.split("@")[0],
+          user_last_name:
+            typeof authUser.user_metadata.user_last_name === "string"
+              ? authUser.user_metadata.user_last_name
+              : "",
           user_type: "master",
-          is_coach: false,
           notes: "",
           is_active: true,
         });
