@@ -1,11 +1,8 @@
-import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { Pencil, Save } from "lucide-react";
 
 import DataTable, { type DataTableColumn } from "@/components/ui/DataTable";
 import RecordBrowserLayout from "@/components/ui/RecordBrowserLayout";
 import RecordNotes from "@/components/ui/RecordNotes";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardAction,
@@ -14,14 +11,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
+import EditRowerDialog from "@features/users/components/EditRowerDialog";
 import { useBoats } from "@features/boats/hooks/useBoats";
 import type { Checkout } from "@features/checkouts/api/checkouts.api";
 import {
   useAdditionalRowers,
   useCheckouts,
 } from "@features/checkouts/hooks/useCheckouts";
-import { useUpdateUser, useUsers } from "@features/users/hooks/useUsers";
+import { useUsers } from "@features/users/hooks/useUsers";
 import {
   getUserDisplayName,
   type User,
@@ -29,31 +26,10 @@ import {
 
 function Rowers() {
   const [searchParams] = useSearchParams();
-  const [editingUserId, setEditingUserId] = useState<string | null>(null);
-  const [notesDraft, setNotesDraft] = useState("");
-  const [userTypeDraft, setUserTypeDraft] = useState<User["user_type"]>("master");
-  const [isActiveDraft, setIsActiveDraft] = useState(false);
-  const [isSingleApprovedDraft, setIsSingleApprovedDraft] = useState(false);
-  const dialogRef = useRef<HTMLDialogElement>(null);
-  const updateUser = useUpdateUser();
   const users = useUsers();
   const checkouts = useCheckouts();
   const additionalRowers = useAdditionalRowers();
   const boats = useBoats();
-
-  useEffect(() => {
-    const dialog = dialogRef.current;
-
-    if (!dialog) {
-      return;
-    }
-
-    if (editingUserId && !dialog.open) {
-      dialog.showModal();
-    } else if (!editingUserId && dialog.open) {
-      dialog.close();
-    }
-  }, [editingUserId]);
 
   const isPending =
     users.isPending ||
@@ -84,9 +60,6 @@ function Rowers() {
   const selectedRower =
     rowerList.find((rower) => rower.user_id === requestedRowerId) ??
     (requestedRowerId ? undefined : rowerList[0]);
-  const editingRower = rowerList.find(
-    (rower) => rower.user_id === editingUserId
-  );
   const boatNames = new Map(
     (boats.data ?? []).map((boat) => [
       boat.boat_id,
@@ -183,27 +156,6 @@ function Rowers() {
     },
   ];
 
-  function handleSaveNotes(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    if (!editingRower) {
-      return;
-    }
-
-    updateUser.mutate(
-      {
-        userId: editingRower.user_id,
-        updates: {
-          user_type: userTypeDraft,
-          is_active: isActiveDraft,
-          is_single_approved: isSingleApprovedDraft,
-          notes: notesDraft,
-        },
-      },
-      { onSuccess: () => setEditingUserId(null) },
-    );
-  }
-
   return (
     <RecordBrowserLayout
       title="Rowers"
@@ -229,23 +181,7 @@ function Rowers() {
               <CardTitle>{getUserDisplayName(selectedRower)}</CardTitle>
               <CardDescription>Rower information</CardDescription>
               <CardAction>
-                <Button
-                  onClick={() => {
-                    updateUser.reset();
-                    setNotesDraft(selectedRower.notes ?? "");
-                    setUserTypeDraft(selectedRower.user_type);
-                    setIsActiveDraft(selectedRower.is_active);
-                    setIsSingleApprovedDraft(
-                      selectedRower.is_single_approved,
-                    );
-                    setEditingUserId(selectedRower.user_id);
-                  }}
-                  size="sm"
-                  variant="outline"
-                >
-                  <Pencil aria-hidden="true" />
-                  Edit rower
-                </Button>
+                <EditRowerDialog rower={selectedRower} />
               </CardAction>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -285,120 +221,6 @@ function Rowers() {
               />
             </CardContent>
           </Card>
-
-          {editingRower && (
-            <dialog
-              aria-labelledby="edit-rower-title"
-              className="fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[min(100%-2rem,34rem)] max-w-none overflow-y-auto rounded-lg border border-border bg-background p-0 text-foreground shadow-xl backdrop:bg-black/50"
-              onCancel={() => setEditingUserId(null)}
-              onClose={() => setEditingUserId(null)}
-              onClick={(event) => {
-                if (event.target === event.currentTarget) {
-                  setEditingUserId(null);
-                }
-              }}
-              ref={dialogRef}
-            >
-              <form className="space-y-5 p-6" onSubmit={handleSaveNotes}>
-                <header className="space-y-1">
-                  <h2
-                    className="text-lg font-semibold"
-                    id="edit-rower-title"
-                  >
-                    Edit rower
-                  </h2>
-                  <p className="text-sm text-muted-foreground">
-                    {getUserDisplayName(editingRower)}
-                  </p>
-                </header>
-
-                <div className="space-y-2">
-                  <label
-                    className="block space-y-2 text-sm font-medium"
-                    htmlFor="edit-rower-type"
-                  >
-                    <span>Type</span>
-                    <select
-                      className="h-9 w-full rounded-lg border border-input bg-background px-3 text-sm font-normal outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-                      id="edit-rower-type"
-                      onChange={(event) =>
-                        setUserTypeDraft(event.target.value as User["user_type"])
-                      }
-                      value={userTypeDraft}
-                    >
-                      <option value="master">Master</option>
-                      <option value="collegiate">Collegiate</option>
-                      <option value="junior">Junior</option>
-                      <option value="middie">Middie</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </label>
-                </div>
-
-                <fieldset className="space-y-3">
-                  <legend className="text-sm font-medium">Status</legend>
-                  <label className="flex items-center gap-2 text-sm">
-                    <input
-                      checked={isActiveDraft}
-                      className="size-4 accent-primary"
-                      onChange={(event) =>
-                        setIsActiveDraft(event.target.checked)
-                      }
-                      type="checkbox"
-                    />
-                    Active
-                  </label>
-                  <label className="flex items-center gap-2 text-sm">
-                    <input
-                      checked={isSingleApprovedDraft}
-                      className="size-4 accent-primary"
-                      onChange={(event) =>
-                        setIsSingleApprovedDraft(event.target.checked)
-                      }
-                      type="checkbox"
-                    />
-                    Single-seat approved
-                  </label>
-                </fieldset>
-
-                <div className="space-y-2">
-                  <label
-                    className="text-sm font-medium"
-                    htmlFor="edit-rower-notes"
-                  >
-                    Notes
-                  </label>
-                  <Textarea
-                    autoFocus
-                    id="edit-rower-notes"
-                    onChange={(event) => setNotesDraft(event.target.value)}
-                    value={notesDraft}
-                  />
-                </div>
-
-                {updateUser.error && (
-                  <p className="text-sm text-destructive" role="alert">
-                    Could not save rower: {updateUser.error.message}
-                  </p>
-                )}
-
-                <footer className="flex justify-end gap-2">
-                  <Button
-                    disabled={updateUser.isPending}
-                    onClick={() => setEditingUserId(null)}
-                    type="button"
-                    variant="outline"
-                  >
-                    Cancel
-                  </Button>
-                  <Button disabled={updateUser.isPending} type="submit">
-                    <Save aria-hidden="true" />
-                    {updateUser.isPending ? "Saving..." : "Save changes"}
-                  </Button>
-                </footer>
-              </form>
-            </dialog>
-          )}
 
           <Card>
             <CardHeader>

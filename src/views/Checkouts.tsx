@@ -4,12 +4,14 @@ import RecordBrowserLayout from "@/components/ui/RecordBrowserLayout";
 import RecordNotes from "@/components/ui/RecordNotes";
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { useBoats } from "@features/boats/hooks/useBoats";
+import EditCheckoutDialog from "@features/checkouts/components/EditCheckoutDialog";
 import {
   useAdditionalRowers,
   useCheckouts,
@@ -19,6 +21,10 @@ import { useUsers } from "@features/users/hooks/useUsers";
 import { useRepairs } from "@features/repairs/hooks/useRepairs";
 import type { Repair } from "@features/repairs/api/repairs.api";
 import { getUserDisplayName } from "@features/users/api/users.api";
+import {
+  formatCheckoutDate,
+  formatCheckoutTime,
+} from "@features/checkouts/checkoutTime";
 
 function formatRepairStatus(status: Repair["status"]) {
   return status === "to_do"
@@ -112,6 +118,11 @@ function Checkouts() {
       getValue: (checkout) =>
         boatNames.get(checkout.object_id) ?? `Boat #${checkout.object_id}`,
     },
+    {
+      id: "date",
+      header: "Date",
+      getValue: (checkout) => formatCheckoutDate(checkout.time_out),
+    },
   ];
 
   const selectedRowerIds = selectedCheckout
@@ -189,6 +200,14 @@ function Checkouts() {
               <CardTitle>
                 Checkout #{selectedCheckout.check_out_id}
               </CardTitle>
+              <CardAction>
+                <EditCheckoutDialog
+                  additionalRowers={additionalRowers.data ?? []}
+                  boats={boats.data ?? []}
+                  checkout={selectedCheckout}
+                  users={users.data ?? []}
+                />
+              </CardAction>
             </CardHeader>
             <CardContent className="space-y-6">
               <dl className="grid gap-x-8 gap-y-4 sm:grid-cols-2">
@@ -205,12 +224,16 @@ function Checkouts() {
                   </dd>
                 </div>
                 <div>
+                  <dt className="text-muted-foreground">Date</dt>
+                  <dd>{formatCheckoutDate(selectedCheckout.time_out)}</dd>
+                </div>
+                <div>
                   <dt className="text-muted-foreground">Time out</dt>
-                  <dd>{selectedCheckout.time_out ?? "Not recorded"}</dd>
+                  <dd>{formatCheckoutTime(selectedCheckout.time_out)}</dd>
                 </div>
                 <div>
                   <dt className="text-muted-foreground">Time in</dt>
-                  <dd>{selectedCheckout.time_in ?? "Not recorded"}</dd>
+                  <dd>{formatCheckoutTime(selectedCheckout.time_in)}</dd>
                 </div>
                 <div className="sm:col-span-2">
                   <dt className="text-muted-foreground">Rowers</dt>
