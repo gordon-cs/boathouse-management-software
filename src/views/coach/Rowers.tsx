@@ -5,11 +5,13 @@ import RecordBrowserLayout from "@/components/ui/RecordBrowserLayout";
 import RecordNotes from "@/components/ui/RecordNotes";
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import EditRowerDialog from "@features/users/components/EditRowerDialog";
 import { useBoats } from "@features/boats/hooks/useBoats";
 import type { Checkout } from "@features/checkouts/api/checkouts.api";
 import {
@@ -17,7 +19,10 @@ import {
   useCheckouts,
 } from "@features/checkouts/hooks/useCheckouts";
 import { useUsers } from "@features/users/hooks/useUsers";
-import type { User } from "@features/users/api/users.api";
+import {
+  getUserDisplayName,
+  type User,
+} from "@features/users/api/users.api";
 
 function Rowers() {
   const [searchParams] = useSearchParams();
@@ -61,6 +66,7 @@ function Rowers() {
       boat.name ?? `Boat #${boat.boat_id}`,
     ])
   );
+  const boatIds = new Set((boats.data ?? []).map((boat) => boat.boat_id));
   const additionalCheckoutIds = new Set(
     (additionalRowers.data ?? [])
       .filter(
@@ -71,16 +77,17 @@ function Rowers() {
   const rowerCheckouts =
     checkouts.data?.filter(
       (checkout) =>
-        checkout.user_id === selectedRower?.user_id ||
-        additionalCheckoutIds.has(checkout.check_out_id)
+        boatIds.has(checkout.object_id) &&
+        (checkout.user_id === selectedRower?.user_id ||
+          additionalCheckoutIds.has(checkout.check_out_id))
     ) ?? [];
   const rowerColumns: DataTableColumn<User>[] = [
     {
       id: "name",
       header: "Rower",
-      getValue: (rower) => rower.user_name,
+      getValue: getUserDisplayName,
       getSearchValue: (rower) =>
-        `${rower.user_name} ${rower.user_type} ${rower.user_id}`,
+        `${getUserDisplayName(rower)} ${rower.user_type} ${rower.user_id}`,
       render: (rower) => (
         <Link
           aria-current={
@@ -89,7 +96,7 @@ function Rowers() {
           className="block rounded-md px-2 py-1 font-medium text-primary underline underline-offset-4 hover:decoration-2"
           to={`/rowers?rowerId=${encodeURIComponent(rower.user_id)}`}
         >
-          {rower.user_name}
+          {getUserDisplayName(rower)}
         </Link>
       ),
     },
@@ -124,15 +131,10 @@ function Rowers() {
       ),
     },
     {
-      id: "date",
-      header: "Date",
-      getValue: (checkout) => checkout.date,
-    },
-    {
       id: "boat",
       header: "Boat",
       getValue: (checkout) =>
-        boatNames.get(checkout.boat_id) ?? `Boat #${checkout.boat_id}`,
+        boatNames.get(checkout.object_id) ?? `Boat #${checkout.object_id}`,
     },
     {
       id: "role",
@@ -176,8 +178,11 @@ function Rowers() {
         <>
           <Card>
             <CardHeader>
-              <CardTitle>{selectedRower.user_name}</CardTitle>
+              <CardTitle>{getUserDisplayName(selectedRower)}</CardTitle>
               <CardDescription>Rower information</CardDescription>
+              <CardAction>
+                <EditRowerDialog rower={selectedRower} />
+              </CardAction>
             </CardHeader>
             <CardContent className="space-y-6">
               <dl className="grid gap-x-8 gap-y-4 sm:grid-cols-2">
@@ -230,7 +235,7 @@ function Rowers() {
                 emptyMessage="No checkouts for this rower."
                 getRowId={(checkout) => checkout.check_out_id}
                 rows={rowerCheckouts}
-                defaultSort={[{ columnId: "date", direction: "descending" }]}
+                defaultSort={[{ columnId: "time-out", direction: "descending" }]}
                 searchLabel="Search rower checkouts"
               />
             </CardContent>

@@ -7,6 +7,7 @@ import {
   useCheckouts,
 } from "@features/checkouts/hooks/useCheckouts";
 import { useUsers } from "@features/users/hooks/useUsers";
+import { getUserDisplayName } from "@features/users/api/users.api";
 import BoatCheckoutCard, { type BoatCheckoutRower } from "./BoatCheckoutCard";
 
 export default function CheckoutCatalog() {
@@ -39,8 +40,9 @@ export default function CheckoutCatalog() {
   }
 
   const boatById = new Map((boats.data ?? []).map((boat) => [boat.boat_id, boat]));
+  const boatIds = new Set(boatById.keys());
   const userNameById = new Map(
-    (users.data ?? []).map((user) => [user.user_id, user.user_name])
+    (users.data ?? []).map((user) => [user.user_id, getUserDisplayName(user)])
   );
   const rowersByCheckout = new Map<number, BoatCheckoutRower[]>();
 
@@ -68,7 +70,10 @@ export default function CheckoutCatalog() {
   }
 
   const activeCheckouts = (checkouts.data ?? [])
-    .filter((checkout) => checkout.time_in === null)
+    .filter(
+      (checkout) =>
+        checkout.time_in === null && boatIds.has(checkout.object_id)
+    )
     .sort((a, b) => (b.time_out ?? "").localeCompare(a.time_out ?? ""));
 
   return (
@@ -90,8 +95,8 @@ export default function CheckoutCatalog() {
           activeCheckouts.map((checkout) => (
             <BoatCheckoutCard
               key={checkout.check_out_id}
-              boat={boatById.get(checkout.boat_id)}
-              boatId={checkout.boat_id}
+              boat={boatById.get(checkout.object_id)}
+              boatId={checkout.object_id}
               rowers={rowersByCheckout.get(checkout.check_out_id) ?? []}
             />
           ))
