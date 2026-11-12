@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type SyntheticEvent } from "react";
 import { Pencil, Save } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -92,7 +92,7 @@ function EditCheckoutDialog({
     );
   }
 
-  async function handleSave(event: FormEvent<HTMLFormElement>) {
+  async function handleSave(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (!date || !timeOut || !objectId || !primaryRowerId) {

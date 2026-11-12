@@ -4,12 +4,15 @@ import RecordBrowserLayout from "@/components/ui/RecordBrowserLayout";
 import RecordNotes from "@/components/ui/RecordNotes";
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { useBoats } from "@features/boats/hooks/useBoats";
+import { useCheckouts } from "@features/checkouts/hooks/useCheckouts";
+import EditRepairDialog from "@features/repairs/components/EditRepairDialog";
 import { useRepairs } from "@features/repairs/hooks/useRepairs";
 import type { Repair } from "@features/repairs/api/repairs.api";
 import { useUsers } from "@features/users/hooks/useUsers";
@@ -27,13 +30,19 @@ function Repairs() {
   const { repairId } = useParams();
   const repairs = useRepairs();
   const boats = useBoats();
+  const checkouts = useCheckouts();
   const users = useUsers();
 
-  if (repairs.isPending || boats.isPending || users.isPending) {
+  if (
+    repairs.isPending ||
+    boats.isPending ||
+    checkouts.isPending ||
+    users.isPending
+  ) {
     return <p className="text-sm text-muted-foreground">Loading repairs...</p>;
   }
 
-  const error = repairs.error ?? boats.error ?? users.error;
+  const error = repairs.error ?? boats.error ?? checkouts.error ?? users.error;
   if (error) {
     return (
       <p className="text-sm text-destructive" role="alert">
@@ -167,6 +176,14 @@ function Repairs() {
               <CardDescription>
                 {selectedRepair.repair_type ?? "Repair details"}
               </CardDescription>
+              <CardAction>
+                <EditRepairDialog
+                  boats={boats.data ?? []}
+                  checkouts={checkouts.data ?? []}
+                  repair={selectedRepair}
+                  users={users.data ?? []}
+                />
+              </CardAction>
             </CardHeader>
             <CardContent className="space-y-6">
               <dl className="grid gap-x-8 gap-y-4 sm:grid-cols-2">

@@ -9,11 +9,10 @@ type UserRecord = Tables<"user">;
 export type User = UserRecord & { is_coach: boolean };
 
 export function getUserDisplayName(user: UserRecord): string {
-  return (
-    user.preferred_name?.trim() ||
-    [user.user_first_name, user.user_last_name].filter(Boolean).join(" ") ||
-    `User #${user.user_id}`
-  );
+  const firstName = user.preferred_name?.trim() || user.user_first_name;
+  const fullName = [firstName, user.user_last_name].filter(Boolean).join(" ");
+
+  return fullName || `User #${user.user_id}`;
 }
 
 export async function getUserById(userId: string): Promise<UserRecord | null> {

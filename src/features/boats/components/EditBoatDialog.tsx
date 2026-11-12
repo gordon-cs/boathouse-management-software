@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type SyntheticEvent } from "react";
 import { Pencil, Save } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -34,7 +34,7 @@ function EditBoatDialog({ boat }: { boat: Boat }) {
     }
   }, [boatDraft]);
 
-  function handleSaveBoat(event: FormEvent<HTMLFormElement>) {
+  function handleSaveBoat(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (!boatDraft) {

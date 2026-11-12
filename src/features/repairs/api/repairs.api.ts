@@ -33,18 +33,14 @@ export async function updateRepair({
 }: {
   repairId: number;
   updates: TablesUpdate<"repair">;
-}): Promise<Repair> {
-  const { data, error } = await supabase
+}): Promise<void> {
+  const { error } = await supabase
     .from("repair")
     .update(updates)
-    .eq("repair_id", repairId)
-    .select()
-    .single();
+    .eq("repair_id", repairId);
 
   if (error) {
     throw error;
   }
-
-  return data;
 }
 

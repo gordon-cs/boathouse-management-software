@@ -1,19 +1,25 @@
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type SyntheticEvent } from "react";
 import { Pencil, Save } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { useAuth } from "@context/useAuth";
 import { getUserDisplayName, type User } from "../api/users.api";
 import { useUpdateUser } from "../hooks/useUsers";
 
 function EditRowerDialog({ rower }: { rower: User }) {
   const [isOpen, setIsOpen] = useState(false);
   const [notesDraft, setNotesDraft] = useState("");
+  const [firstNameDraft, setFirstNameDraft] = useState("");
+  const [lastNameDraft, setLastNameDraft] = useState("");
+  const [preferredNameDraft, setPreferredNameDraft] = useState("");
   const [userTypeDraft, setUserTypeDraft] = useState<User["user_type"]>("master");
   const [isActiveDraft, setIsActiveDraft] = useState(false);
   const [isSingleApprovedDraft, setIsSingleApprovedDraft] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const updateUser = useUpdateUser();
+  const { session } = useAuth();
+  const isEditingOwnProfile = session?.user.id === rower.user_id;
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -29,7 +35,7 @@ function EditRowerDialog({ rower }: { rower: User }) {
     }
   }, [isOpen]);
 
-  function handleSave(event: FormEvent<HTMLFormElement>) {
+  function handleSave(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
     updateUser.mutate(
       {
@@ -39,6 +45,11 @@ function EditRowerDialog({ rower }: { rower: User }) {
           is_active: isActiveDraft,
           is_single_approved: isSingleApprovedDraft,
           notes: notesDraft,
+          ...(isEditingOwnProfile && {
+            user_first_name: firstNameDraft,
+            user_last_name: lastNameDraft,
+            preferred_name: preferredNameDraft.trim() || null,
+          }),
         },
       },
       { onSuccess: () => setIsOpen(false) },
@@ -48,6 +59,9 @@ function EditRowerDialog({ rower }: { rower: User }) {
   function openDialog() {
     updateUser.reset();
     setNotesDraft(rower.notes ?? "");
+    setFirstNameDraft(rower.user_first_name);
+    setLastNameDraft(rower.user_last_name);
+    setPreferredNameDraft(rower.preferred_name ?? "");
     setUserTypeDraft(rower.user_type);
     setIsActiveDraft(rower.is_active);
     setIsSingleApprovedDraft(rower.is_single_approved);
@@ -83,6 +97,42 @@ function EditRowerDialog({ rower }: { rower: User }) {
                 {getUserDisplayName(rower)}
               </p>
             </header>
+
+            {isEditingOwnProfile && (
+              <div className="grid gap-4 sm:grid-cols-2">
+                <label className="space-y-2 text-sm font-medium">
+                  <span>First name</span>
+                  <input
+                    autoComplete="given-name"
+                    className="h-9 w-full rounded-lg border border-input bg-background px-3 text-sm font-normal outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+                    onChange={(event) => setFirstNameDraft(event.target.value)}
+                    required
+                    value={firstNameDraft}
+                  />
+                </label>
+                <label className="space-y-2 text-sm font-medium">
+                  <span>Last name</span>
+                  <input
+                    autoComplete="family-name"
+                    className="h-9 w-full rounded-lg border border-input bg-background px-3 text-sm font-normal outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+                    onChange={(event) => setLastNameDraft(event.target.value)}
+                    required
+                    value={lastNameDraft}
+                  />
+                </label>
+                <label className="space-y-2 text-sm font-medium sm:col-span-2">
+                  <span>Preferred name</span>
+                  <input
+                    autoComplete="nickname"
+                    className="h-9 w-full rounded-lg border border-input bg-background px-3 text-sm font-normal outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+                    onChange={(event) =>
+                      setPreferredNameDraft(event.target.value)
+                    }
+                    value={preferredNameDraft}
+                  />
+                </label>
+              </div>
+            )}
 
             <label className="block space-y-2 text-sm font-medium" htmlFor="edit-rower-type">
               <span>Type</span>
