@@ -2,13 +2,13 @@ import { AuthProvider } from "@context/AuthContext";
 import Login from "@views/Login";
 import SignUp from "@views/SignUp";
 import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
-import Dashboard from "@/views/CoachViews/Dashboard";
+import Dashboard from "@/views/coach/Dashboard";
 import ProtectedRoute from "@components/ProtectedRoute";
-import Boats from "@/views/CoachViews/Boats";
-import Repairs from "@/views/CoachViews/Repairs";
-import Checkouts from "@/views/CoachViews/Checkouts";
-import Rowers from "@/views/CoachViews/Rowers";
-import RowerCheckouts from "@/views/RowerViews/Checkouts";
+import Boats from "@/views/coach/Boats";
+import Repairs from "@/views/coach/Repairs";
+import Checkouts from "@/views/coach/Checkouts";
+import Rowers from "@/views/coach/Rowers";
+import RowerCheckouts from "@/views/rower/Checkouts";
 
 export default function App() {
   return (
