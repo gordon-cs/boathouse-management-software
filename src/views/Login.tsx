@@ -14,7 +14,7 @@ export default function Login() {
   // Redirect users back to where they came from, or default to the dashboard
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/dashboard';
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
@@ -31,7 +31,7 @@ export default function Login() {
         // AuthContext automatically picks up the session change via onAuthStateChange
         navigate(from, { replace: true });
       }
-    } catch (err) {
+    } catch {
       setError('An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);

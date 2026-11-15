@@ -1,4 +1,5 @@
 import BoatStats from "@features/boats/components/BoatStats";
+import EditBoatDialog from "@features/boats/components/EditBoatDialog";
 import { useBoats } from "@features/boats/hooks/useBoats";
 import { useCheckouts } from "@features/checkouts/hooks/useCheckouts";
 import { useRepairs } from "@features/repairs/hooks/useRepairs";
@@ -11,6 +12,7 @@ import RecordBrowserLayout from "@/components/ui/RecordBrowserLayout";
 import RecordNotes from "@/components/ui/RecordNotes";
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -30,6 +32,7 @@ function Boats() {
   const boats = useBoats();
   const checkouts = useCheckouts();
   const repairs = useRepairs();
+
   const isPending = boats.isPending || checkouts.isPending || repairs.isPending;
 
   if (isPending) {
@@ -91,10 +94,10 @@ function Boats() {
 
   const selectedCheckouts =
     checkouts.data?.filter(
-      (checkout) => checkout.boat_id === selectedBoat?.boat_id
+      (checkout) => checkout.object_id === selectedBoat?.boat_id
     ) ?? [];
   const selectedRepairs =
-    repairs.data?.filter((repair) => repair.boat_id === selectedBoat?.boat_id) ??
+    repairs.data?.filter((repair) => repair.object_id === selectedBoat?.boat_id) ??
     [];
 
   const checkoutColumns: DataTableColumn<Checkout>[] = [
@@ -111,7 +114,6 @@ function Boats() {
         </Link>
       ),
     },
-    { id: "date", header: "Date", getValue: (checkout) => checkout.date },
     {
       id: "time",
       header: "Time out",
@@ -152,7 +154,7 @@ function Boats() {
     {
       id: "rowable",
       header: "Rowable",
-      getValue: (repair) => repair.is_rowable,
+      getValue: (repair) => repair.is_usable,
     },
     { id: "date", header: "Date", getValue: (repair) => repair.date },
   ];
@@ -183,6 +185,9 @@ function Boats() {
                 {selectedBoat.name ?? `Boat #${selectedBoat.boat_id}`}
               </CardTitle>
               <CardDescription>Boat information</CardDescription>
+              <CardAction>
+                <EditBoatDialog boat={selectedBoat} />
+              </CardAction>
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
@@ -208,7 +213,7 @@ function Boats() {
                 emptyMessage="No checkouts for this boat."
                 getRowId={(checkout) => checkout.check_out_id}
                 rows={selectedCheckouts}
-                defaultSort={[{ columnId: "date", direction: "descending" }]}
+                defaultSort={[{ columnId: "time", direction: "descending" }]}
                 searchLabel="Search boat checkouts"
               />
             </CardContent>

@@ -40,8 +40,8 @@ function BoatStats({ boat }: { boat: Boat }) {
         </dd>
       </div>
       <div>
-        <dt className="text-muted-foreground">In use</dt>
-        <dd>{boat.is_in_use ? "Yes" : "No"}</dd>
+        <dt className="text-muted-foreground">Retired</dt>
+        <dd>{boat.is_retired ? "Yes" : "No"}</dd>
       </div>
     </dl>
   );

@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 
 export default function SignUp() {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -12,7 +14,7 @@ export default function SignUp() {
   const [loading, setLoading] = useState(false);
 
   async function handleSignUp(
-    e: React.FormEvent<HTMLFormElement>
+    e: React.SyntheticEvent<HTMLFormElement>
   ) {
     e.preventDefault();
     setError("");
@@ -34,6 +36,12 @@ export default function SignUp() {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            user_first_name: firstName,
+            user_last_name: lastName,
+          },
+        },
       });
 
       if (error) throw error;
@@ -62,6 +70,32 @@ export default function SignUp() {
       <p>Sign up to get started.</p>
 
       <form onSubmit={handleSignUp}>
+        <div style={{ marginBottom: 16 }}>
+          <label htmlFor="firstName">First name</label>
+          <input
+            id="firstName"
+            type="text"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            autoComplete="given-name"
+            required
+            style={{ display: "block", width: "100%", padding: 10 }}
+          />
+        </div>
+
+        <div style={{ marginBottom: 16 }}>
+          <label htmlFor="lastName">Last name</label>
+          <input
+            id="lastName"
+            type="text"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            autoComplete="family-name"
+            required
+            style={{ display: "block", width: "100%", padding: 10 }}
+          />
+        </div>
+
         <div style={{ marginBottom: 16 }}>
           <label htmlFor="email">Email address</label>
           <input

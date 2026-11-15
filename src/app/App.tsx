@@ -4,6 +4,7 @@ import SignUp from "@views/SignUp";
 import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
 import Dashboard from "@/views/coach/Dashboard";
 import ProtectedRoute from "@components/ProtectedRoute";
+import CoachRoute from "@components/CoachRoute";
 import Boats from "@/views/coach/Boats";
 import Repairs from "@/views/coach/Repairs";
 import Checkouts from "@/views/coach/Checkouts";
@@ -21,11 +22,13 @@ export default function App() {
 
           {/* Protected routes, add new views here */}
           <Route element={<ProtectedRoute />}>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/boats" element={<Boats />} />
-            <Route path="/rowers" element={<Rowers />} />
-            <Route path="/repairs/:repairId?" element={<Repairs />} />
-            <Route path="/checkouts/:checkoutId?" element={<Checkouts />} />
+            <Route element={<CoachRoute />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/boats" element={<Boats />} />
+              <Route path="/rowers" element={<Rowers />} />
+              <Route path="/repairs/:repairId?" element={<Repairs />} />
+              <Route path="/checkouts/:checkoutId?" element={<Checkouts />} />
+            </Route>
             <Route path="/rower-checkouts" element={<RowerCheckouts />} />
           </Route>
 
