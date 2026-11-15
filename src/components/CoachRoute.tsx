@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
-import { supabase } from "../lib/supabaseClient";
+import { isCoach } from "@features/users/api/coaches.api";
 
 type CoachAccess =
   | { userId: string; status: "loading" }
@@ -25,25 +25,15 @@ export default function CoachRoute() {
 
     async function checkCoachAccess() {
       try {
-        const { data, error } = await supabase
-          .from("coaches")
-          .select("coach_id")
-          .eq("coach_id", coachId)
-          .maybeSingle();
+        const coachAccess = await isCoach(coachId);
 
         if (!active) {
           return;
         }
 
-        if (error) {
-          console.error("Could not check coach access:", error);
-          setAccess({ userId: coachId, status: "error", message: error.message });
-          return;
-        }
-
         setAccess({
           userId: coachId,
-          status: data ? "allowed" : "denied",
+          status: coachAccess ? "allowed" : "denied",
         });
       } catch (error) {
         if (!active) {
