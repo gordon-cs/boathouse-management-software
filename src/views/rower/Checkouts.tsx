@@ -1,5 +1,5 @@
 import DashboardNavbar from "@/components/ui/DashboardNavbar";
-import CheckoutCatalog from "@features/rowerCheckouts/components/CheckoutCatalog";
+import CheckoutCatalog from "@/features/rowerCheckouts/components/CheckoutCatalog";
 
 export default function RowerCheckouts() {
   return (
