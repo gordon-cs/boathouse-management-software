@@ -18,7 +18,7 @@ import { supabase } from "@/lib/supabaseClient";
 const navItems = [
   { label: "Boats", path: "/boats", icon: Ship },
   { label: "Checkouts", path: "/checkouts", icon: ClipboardList },
- // { label: "Rower View", path: "/rower-checkouts", icon: UserRound },
+  { label: "Rower View", path: "/rower-checkouts", icon: UserRound },
   { label: "Rowers", path: "/rowers", icon: Users },
   { label: "Repairs", path: "/repairs", icon: Wrench },
 ];

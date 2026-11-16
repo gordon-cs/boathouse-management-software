@@ -6,11 +6,10 @@ import {
   updateBoat,
 } from "../api/boats.api";
 
-export function useBoats(enabled = true) {
+export function useBoats() {
   return useQuery({
     queryKey: ["boats"],
     queryFn: getBoats,
-    enabled,
   });
 }
 
