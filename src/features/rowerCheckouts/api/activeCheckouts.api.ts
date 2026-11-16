@@ -1,5 +1,6 @@
 
 import { supabase } from "@/lib/supabaseClient";
+import { getUserDisplayName } from "@features/users/api/users.api";
 
 type AdditionalRower = {
   check_out_id: number;
@@ -35,11 +36,11 @@ export async function getActiveBoatCheckouts() {
 
   // 2. Match active checkouts to boats
   const boatById = new Map(
-    boats.map((boat) => [boat.object_id, boat])
+    boats.map((boat) => [boat.boat_id, boat])
   );
 
   const activeBoatCheckouts = checkouts.filter((checkout) =>
-    boatById.has(checkout.boat_id)
+    boatById.has(checkout.object_id)
   );
 
   // 3. Retrieve additional rowers for active checkouts
@@ -62,7 +63,7 @@ export async function getActiveBoatCheckouts() {
 
   // 4. Create a map of user IDs to names
   const userNameById = new Map(
-    users.map((user) => [user.user_id, user.user_name])
+    users.map((user) => [user.user_id, getUserDisplayName(user)])
   );
 
   // 5. Group additional rowers by checkout
@@ -83,7 +84,7 @@ export async function getActiveBoatCheckouts() {
 
   // 6. Return organized checkout data
   return activeBoatCheckouts.map((checkout) => {
-    const boat = boatById.get(checkout.boat_id);
+    const boat = boatById.get(checkout.object_id);
 
     const mainRower: CheckoutRower = {
       id: checkout.user_id,
@@ -95,7 +96,7 @@ export async function getActiveBoatCheckouts() {
     return {
       ...checkout,
       boat,
-      boatId: checkout.boat_id,
+      boatId: checkout.object_id,
       rowers: [
         mainRower,
         ...(rowersByCheckout.get(checkout.check_out_id) ?? []),

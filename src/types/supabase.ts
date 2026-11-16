@@ -46,9 +46,8 @@ export type Database = {
       }
       boat: {
         Row: {
-          object_id: number
+          boat_id: number
           inboard: number | null
-          is_available: boolean | null
           is_retired: boolean
           make: string | null
           max_weight: number | null
@@ -62,7 +61,6 @@ export type Database = {
         Insert: {
           boat_id?: number
           inboard?: number | null
-          is_available?: boolean | null
           is_retired?: boolean
           make?: string | null
           max_weight?: number | null
@@ -76,7 +74,6 @@ export type Database = {
         Update: {
           boat_id?: number
           inboard?: number | null
-          is_available?: boolean | null
           is_retired?: boolean
           make?: string | null
           max_weight?: number | null
@@ -200,50 +197,6 @@ export type Database = {
           },
         ]
       }
-      oars: {
-        Row: {
-          is_available: boolean | null
-          is_retired: boolean | null
-          make: string | null
-          notes: string | null
-          oars_id: number
-          pair: string | null
-          set: string | null
-          type: Database["public"]["Enums"]["oar_type"]
-          year: number | null
-        }
-        Insert: {
-          is_available?: boolean | null
-          is_retired?: boolean | null
-          make?: string | null
-          notes?: string | null
-          oars_id?: number
-          pair?: string | null
-          set?: string | null
-          type: Database["public"]["Enums"]["oar_type"]
-          year?: number | null
-        }
-        Update: {
-          is_available?: boolean | null
-          is_retired?: boolean | null
-          make?: string | null
-          notes?: string | null
-          oars_id?: number
-          pair?: string | null
-          set?: string | null
-          type?: Database["public"]["Enums"]["oar_type"]
-          year?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "oars_oars_id_fkey"
-            columns: ["oars_id"]
-            isOneToOne: true
-            referencedRelation: "repairable_object"
-            referencedColumns: ["object_id"]
-          },
-        ]
-      }
       repair: {
         Row: {
           check_out_id: number | null
@@ -355,7 +308,30 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      available_boats: {
+        Row: {
+          boat_id: number | null
+          inboard: number | null
+          is_retired: boolean | null
+          make: string | null
+          max_weight: number | null
+          min_weight: number | null
+          name: string | null
+          notes: string | null
+          pitch: number | null
+          seats: number | null
+          year: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "boat_boat_id_fkey"
+            columns: ["boat_id"]
+            isOneToOne: true
+            referencedRelation: "repairable_object"
+            referencedColumns: ["object_id"]
+          },
+        ]
+      }
     }
     Functions: {
       [_ in never]: never

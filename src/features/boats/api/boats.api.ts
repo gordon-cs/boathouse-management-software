@@ -13,6 +13,16 @@ export async function getBoats(): Promise<Boat[]> {
   return data;
 }
 
+export async function getAvailableBoats(): Promise<Boat[]> {
+  const { data, error } = await supabase.from("boat").select();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+
 export async function createBoat(boat: TablesInsert<"boat">): Promise<Boat> {
   const { data, error } = await supabase.from("boat").insert(boat).select().single();
 

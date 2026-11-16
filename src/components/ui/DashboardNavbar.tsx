@@ -8,7 +8,6 @@ import {
   Wrench,
   LogOut,
   ClipboardList,
-  UserRound,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";

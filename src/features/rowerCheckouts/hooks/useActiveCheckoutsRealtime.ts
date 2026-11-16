@@ -21,6 +21,9 @@ export function useActiveCheckoutsRealtime() {
           queryClient.invalidateQueries({
             queryKey: ["active-boat-checkouts"],
           });
+          queryClient.invalidateQueries({
+            queryKey: ["available-boats"],
+          });
         }
       )
 

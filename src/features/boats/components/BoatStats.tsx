@@ -30,16 +30,6 @@ function BoatStats({ boat }: { boat: Boat }) {
         <dd>{boat.pitch ?? "Not recorded"}</dd>
       </div>
       <div>
-        <dt className="text-muted-foreground">Available</dt>
-        <dd>
-          {boat.is_available === null
-            ? "Not recorded"
-            : boat.is_available
-              ? "Yes"
-              : "No"}
-        </dd>
-      </div>
-      <div>
         <dt className="text-muted-foreground">Retired</dt>
         <dd>{boat.is_retired ? "Yes" : "No"}</dd>
       </div>

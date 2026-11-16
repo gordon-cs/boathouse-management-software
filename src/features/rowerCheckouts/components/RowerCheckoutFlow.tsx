@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 import { useAuth } from "@/context/useAuth";
 import type { Boat } from "@features/boats/api/boats.api";
-import { useBoats } from "@features/boats/hooks/useBoats";
+import { useAvailableBoats } from "@features/boats/hooks/useBoats";
 import type { Erg } from "@features/ergs/api/ergs.api";
 import { useErgs } from "@features/ergs/hooks/useErgs";
 import type { Checkout } from "@features/checkouts/api/checkouts.api";
@@ -166,7 +166,7 @@ export default function RowerCheckoutFlow({
   assetType,
 }: RowerCheckoutFlowProps) {
   const { session, loading: authIsLoading } = useAuth();
-  const boats = useBoats(assetType === "boat");
+  const boats = useAvailableBoats(assetType === "boat");
   const ergs = useErgs(assetType === "erg");
   const users = useUsers();
   const checkouts = useCheckouts();
@@ -223,13 +223,18 @@ export default function RowerCheckoutFlow({
   const assetArticle = assetType === "boat" ? "a" : "an";
   const assets: RowerCheckoutAsset[] =
     assetType === "boat"
-      ? (boats.data ?? []).map((boat) => ({
-          id: boat.boat_id,
-          name: boat.name,
-          isAvailable: boat.is_available,
-          isRetired: boat.is_retired,
-          specs: <BoatSpecs boat={boat} />,
-        }))
+      ? (boats.data ?? [])
+          .filter(
+            (boat): boat is Boat =>
+              boat.boat_id !== null && boat.name !== null,
+          )
+          .map((boat) => ({
+            id: boat.boat_id,
+            name: boat.name,
+            isAvailable: true,
+            isRetired: false,
+            specs: <BoatSpecs boat={boat} />,
+          }))
       : (ergs.data ?? []).map((erg) => ({
           id: erg.erg_id,
           name: erg.name?.trim() || `Erg #${erg.number}`,

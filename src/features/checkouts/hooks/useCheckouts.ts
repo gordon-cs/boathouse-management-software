@@ -32,6 +32,7 @@ export function useCreateCheckout() {
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["check_out"] }),
         queryClient.invalidateQueries({ queryKey: ["additional_rower"] }),
+        queryClient.invalidateQueries({ queryKey: ["available-boats"] }),
       ]),
   });
 }
@@ -45,6 +46,7 @@ export function useUpdateCheckout() {
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["check_out"] }),
         queryClient.invalidateQueries({ queryKey: ["additional_rower"] }),
+        queryClient.invalidateQueries({ queryKey: ["available-boats"] }),
       ]),
   });
 }

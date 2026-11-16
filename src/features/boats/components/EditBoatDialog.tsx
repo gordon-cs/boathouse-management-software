@@ -203,32 +203,6 @@ function EditBoatDialog({ boat }: { boat: Boat }) {
                   value={boatDraft.pitch ?? ""}
                 />
               </label>
-              <label className="space-y-2 text-sm font-medium">
-                <span>Availability</span>
-                <select
-                  className="h-9 w-full rounded-lg border border-input bg-background px-3 text-sm font-normal outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-                  onChange={(event) =>
-                    setBoatDraft({
-                      ...boatDraft,
-                      is_available:
-                        event.target.value === ""
-                          ? null
-                          : event.target.value === "available",
-                    })
-                  }
-                  value={
-                    boatDraft.is_available === null
-                      ? ""
-                      : boatDraft.is_available
-                        ? "available"
-                        : "unavailable"
-                  }
-                >
-                  <option value="">Not recorded</option>
-                  <option value="available">Available</option>
-                  <option value="unavailable">Unavailable</option>
-                </select>
-              </label>
             </div>
 
             <label className="flex items-center gap-2 text-sm">

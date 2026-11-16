@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useActiveCheckouts } from "../hooks/useActiveCheckouts";
-import RowerCheckoutNew from "@/views/rower/CheckoutNew";
 import BoatCheckoutCard from "./BoatCheckoutCard";
 
 export default function CheckoutCatalog() {
