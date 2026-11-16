@@ -26,6 +26,8 @@ theme and global styles are in `src/index.css`.
 
 [Instructions/Handoff Document](https://docs.google.com/document/d/1x4I4EGzzWWElWJV94g7WDkuo4rQxXAjKfQi9Dj8jqI4/edit?usp=sharing)
 
+[MVP Document](https://docs.google.com/document/d/1DAbsCBCpTNm_nul-0a_D_skDWCg7ycjHhKQs6zo-bWk/edit?usp=sharing)
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
