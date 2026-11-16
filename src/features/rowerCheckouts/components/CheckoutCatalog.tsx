@@ -1,27 +1,17 @@
+
 import { Link } from "react-router-dom";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useBoats } from "@features/boats/hooks/useBoats";
-import {
-  useAdditionalRowers,
-  useCheckouts,
-} from "@features/checkouts/hooks/useCheckouts";
-import { useUsers } from "@features/users/hooks/useUsers";
-import { getUserDisplayName } from "@features/users/api/users.api";
-import BoatCheckoutCard, { type BoatCheckoutRower } from "./BoatCheckoutCard";
+import { useActiveCheckouts } from "../hooks/useActiveCheckouts";
+import RowerCheckoutNew from "@/views/rower/CheckoutNew";
+import BoatCheckoutCard from "./BoatCheckoutCard";
 
 export default function CheckoutCatalog() {
-  const boats = useBoats();
-  const users = useUsers();
-  const checkouts = useCheckouts();
-  const additionalRowers = useAdditionalRowers();
-  const isPending =
-    boats.isPending ||
-    users.isPending ||
-    checkouts.isPending ||
-    additionalRowers.isPending;
-  const error =
-    boats.error ?? users.error ?? checkouts.error ?? additionalRowers.error;
+  const {
+    data: activeCheckouts,
+    isPending,
+    error,
+  } = useActiveCheckouts();
 
   if (isPending) {
     return (
@@ -39,49 +29,13 @@ export default function CheckoutCatalog() {
     );
   }
 
-  const boatById = new Map((boats.data ?? []).map((boat) => [boat.boat_id, boat]));
-  const boatIds = new Set(boatById.keys());
-  const userNameById = new Map(
-    (users.data ?? []).map((user) => [user.user_id, getUserDisplayName(user)])
-  );
-  const rowersByCheckout = new Map<number, BoatCheckoutRower[]>();
-
-  for (const checkout of checkouts.data ?? []) {
-    if (checkout.time_in !== null) continue;
-
-    rowersByCheckout.set(checkout.check_out_id, [
-      {
-        id: checkout.user_id,
-        name: userNameById.get(checkout.user_id) ?? `User #${checkout.user_id}`,
-      },
-    ]);
-  }
-
-  for (const additionalRower of additionalRowers.data ?? []) {
-    const rowers = rowersByCheckout.get(additionalRower.check_out_id);
-    if (!rowers) continue;
-
-    rowers.push({
-      id: additionalRower.additional_rower_id,
-      name:
-        userNameById.get(additionalRower.additional_rower_id) ??
-        `User #${additionalRower.additional_rower_id}`,
-    });
-  }
-
-  const activeCheckouts = (checkouts.data ?? [])
-    .filter(
-      (checkout) =>
-        checkout.time_in === null && boatIds.has(checkout.object_id)
-    )
-    .sort((a, b) => (b.time_out ?? "").localeCompare(a.time_out ?? ""));
-
   return (
     <div className="flex flex-col gap-4">
       <header className="space-y-2">
         <h1 className="text-2xl font-semibold tracking-tight">
           Active checkouts
         </h1>
+
         <p className="text-sm text-muted-foreground">
           View boats currently checked out and their rowers.
         </p>
@@ -91,19 +45,22 @@ export default function CheckoutCatalog() {
         aria-label="Currently checked-out boats"
         className="max-h-[min(68svh,56rem)] min-h-64 space-y-4 overflow-y-auto pr-2"
       >
-        {activeCheckouts.length ? (
+        {activeCheckouts?.length ? (
           activeCheckouts.map((checkout) => (
             <BoatCheckoutCard
               key={checkout.check_out_id}
-              boat={boatById.get(checkout.object_id)}
-              boatId={checkout.object_id}
-              rowers={rowersByCheckout.get(checkout.check_out_id) ?? []}
+              boat={checkout.boat}
+              boatId={checkout.boatId}
+              rowers={checkout.rowers}
             />
           ))
         ) : (
           <div className="flex min-h-64 items-center justify-center rounded-xl border border-dashed bg-card px-6 text-center">
             <div className="space-y-2">
-              <h2 className="font-medium">No boats are checked out</h2>
+              <h2 className="font-medium">
+                No boats are checked out
+              </h2>
+
               <p className="text-sm text-muted-foreground">
                 New checkouts will appear here.
               </p>
@@ -114,7 +71,7 @@ export default function CheckoutCatalog() {
 
       <div className="flex justify-end border-t pt-5">
         <Button asChild>
-          <Link to="/checkouts">
+          <Link to="/rower-checkouts/new">
             <Plus className="mr-2 h-4 w-4" />
             Create new checkout
           </Link>

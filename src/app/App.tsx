@@ -11,6 +11,7 @@ import Repairs from "@/views/coach/Repairs";
 import Checkouts from "@/views/coach/Checkouts";
 import Rowers from "@/views/coach/Rowers";
 import RowerCheckouts from "@/views/rower/Checkouts";
+import RowerCheckoutNew from "@/views/rower/CheckoutNew";
 import RowerErgCheckouts from "@/views/rower/ErgCheckouts";
 
 export default function App() {
@@ -33,6 +34,10 @@ export default function App() {
             </Route>
             <Route element={<RowerRoute />}>
               <Route path="/rower-checkouts" element={<RowerCheckouts />} />
+              <Route 
+                path="/rower-checkouts/new"
+                element={<RowerCheckoutNew />}
+              />
               <Route
                 path="/rower-erg-checkouts"
                 element={<RowerErgCheckouts />}
