@@ -46,7 +46,7 @@ export type Database = {
       }
       boat: {
         Row: {
-          object_id: number
+          boat_id: number
           inboard: number | null
           is_available: boolean | null
           is_retired: boolean
