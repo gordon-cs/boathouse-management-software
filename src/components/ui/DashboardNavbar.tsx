@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import type { ComponentProps } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -8,6 +7,7 @@ import {
   Wrench,
   LogOut,
   ClipboardList,
+  UserRound,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,7 @@ import { supabase } from "@/lib/supabaseClient";
 const navItems = [
   { label: "Boats", path: "/boats", icon: Ship },
   { label: "Checkouts", path: "/checkouts", icon: ClipboardList },
- // { label: "Rower View", path: "/rower-checkouts", icon: UserRound },
+  { label: "Rower View", path: "/rower-checkouts", icon: UserRound },
   { label: "Rowers", path: "/rowers", icon: Users },
   { label: "Repairs", path: "/repairs", icon: Wrench },
 ];
@@ -41,7 +41,9 @@ export default function DashboardNavbar({
       navigate("/login", { replace: true });
     } catch (error) {
       setLogoutError(
-        error instanceof Error ? error.message : "Could not sign out. Please try again.",
+        error instanceof Error
+          ? error.message
+          : "Could not sign out. Please try again.",
       );
     } finally {
       setIsSigningOut(false);
@@ -51,7 +53,10 @@ export default function DashboardNavbar({
   return (
     <header
       {...props}
-      className={cn("flex w-full items-center gap-2 border-b px-4 py-3", className)}
+      className={cn(
+        "flex w-full items-center gap-2 border-b px-4 py-3",
+        className,
+      )}
     >
       <nav
         className="flex items-center gap-2"
@@ -62,9 +67,7 @@ export default function DashboardNavbar({
             <NavLink
               to={path}
               className={({ isActive }) =>
-                isActive
-                  ? "bg-accent text-accent-foreground"
-                  : ""
+                isActive ? "bg-accent text-accent-foreground" : ""
               }
             >
               <Icon className="mr-2 h-4 w-4" />

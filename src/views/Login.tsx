@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
-import { isCoach } from '@features/users/api/coaches.api';
 
 export default function Login() {
   const [email, setEmail] = useState<string>('');
@@ -21,7 +20,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const { data, error: authError } = await supabase.auth.signInWithPassword({
+      const { error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -29,17 +28,11 @@ export default function Login() {
       if (authError) {
         setError(authError.message);
       } else {
-        const coachAccess = await isCoach(data.user.id);
-        const destination =
-          coachAccess && from.startsWith('/rower-') ? '/dashboard' : from;
-        navigate(destination, { replace: true });
+        // AuthContext automatically picks up the session change via onAuthStateChange
+        navigate(from, { replace: true });
       }
-    } catch (loginError) {
-      setError(
-        loginError instanceof Error
-          ? loginError.message
-          : 'An unexpected error occurred. Please try again.',
-      );
+    } catch {
+      setError('An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
