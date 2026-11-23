@@ -32,6 +32,20 @@ export function useActiveCheckoutsRealtime() {
         {
           event: "*",
           schema: "public",
+          table: "boat",
+        },
+        () => {
+          queryClient.invalidateQueries({
+            queryKey: ["active-boat-checkouts"],
+          });
+        }
+      )
+
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
           table: "additional_rower",
         },
         () => {
