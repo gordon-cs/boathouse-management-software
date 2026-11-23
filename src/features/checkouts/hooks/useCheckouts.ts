@@ -57,7 +57,10 @@ export function useCreateAdditionalRower() {
   return useMutation({
     mutationFn: createAdditionalRower,
     onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["additional_rower"] }),
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["additional_rower"] }),
+        queryClient.invalidateQueries({ queryKey: ["active-boat-checkouts"] }),
+      ]),
   });
 }
 

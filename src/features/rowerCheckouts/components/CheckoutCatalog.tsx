@@ -4,8 +4,17 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useActiveCheckouts } from "../hooks/useActiveCheckouts";
 import BoatCheckoutCard from "./BoatCheckoutCard";
+import { useAuth } from "@/context/useAuth";
+import { useCreateAdditionalRower } from "@features/checkouts/hooks/useCheckouts";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function CheckoutCatalog() {
+  const { session } = useAuth();
+  const createAdditionalRower = useCreateAdditionalRower();
+  const navigate = useNavigate();
+  const [joiningCheckoutId, setJoiningCheckoutId] = useState<number | null>(null);
+  const [joinError, setJoinError] = useState<string | null>(null);
   const {
     data: activeCheckouts,
     isPending,
@@ -28,6 +37,34 @@ export default function CheckoutCatalog() {
     );
   }
 
+  async function handleJoin(checkoutId: number, boatName: string) {
+    if (!session?.user.id) {
+      setJoinError("Sign in to join this checkout.");
+      return;
+    }
+
+    setJoiningCheckoutId(checkoutId);
+    setJoinError(null);
+
+    try {
+      await createAdditionalRower.mutateAsync({
+        check_out_id: checkoutId,
+        additional_rower_id: session.user.id,
+      });
+      navigate(
+        `/rower-checkouts/new?joined=true&boat=${encodeURIComponent(boatName)}`,
+      );
+    } catch (joinError) {
+      setJoinError(
+        joinError instanceof Error
+          ? joinError.message
+          : "Could not join this checkout.",
+      );
+    } finally {
+      setJoiningCheckoutId(null);
+    }
+  }
+
   return (
     <div className="flex flex-col gap-4">
       <header className="space-y-2">
@@ -40,6 +77,12 @@ export default function CheckoutCatalog() {
         </p>
       </header>
 
+      {joinError && (
+        <p className="text-sm text-destructive" role="alert">
+          {joinError}
+        </p>
+      )}
+
       <section
         aria-label="Currently checked-out boats"
         className="max-h-[min(68svh,56rem)] min-h-64 space-y-4 overflow-y-auto pr-2"
@@ -50,7 +93,11 @@ export default function CheckoutCatalog() {
               key={checkout.check_out_id}
               boat={checkout.boat}
               boatId={checkout.boatId}
+              checkoutId={checkout.check_out_id}
               rowers={checkout.rowers}
+              currentUserId={session?.user.id ?? null}
+              isJoining={joiningCheckoutId === checkout.check_out_id}
+              onJoin={handleJoin}
             />
           ))
         ) : (
